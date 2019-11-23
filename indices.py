@@ -4,7 +4,7 @@ INF = 99999
 v1 = {"bien":1,"mange":1,"midi":1}
 u1 = {"bien":1,"mange":1,"midi":1,"dormi":1,"cours":1}
 
-#function whcihe parses a file into a dictionary
+#function which parses a file into a dictionary
 def file_to_dict(name):
     fp = open(name, 'r')
     line = fp.readline()
@@ -22,7 +22,7 @@ def file_to_dict(name):
             line = fp.readline()
     return d
 
-#Transformation of a set a file to a list of dictionaries
+#Transformation of a set a files to a list of dictionaries
 def files_to_dicts(names):
     l = []
     for n in names:
@@ -57,9 +57,9 @@ def jaccard_index(t1, t2):
 
     return s / s2
 
-#Creation of the matrix of jaccard distances from a set of file in the form of a list of dictionaries
+#Creation of the matrix of jaccard distances from a set of files in the form of a list of dictionaries
 def make_mat_dist(texts): #textes est une liste de dictionnaires
-    mat_dist = res = [ [ 0 for i in range(len(texts)) ] for j in range(len(texts)) ]
+    mat_dist = [ [ 0 for i in range(len(texts)) ] for j in range(len(texts)) ]
 
     for i in range(len(texts)):
         #j = i+1
@@ -72,21 +72,19 @@ def make_mat_dist(texts): #textes est une liste de dictionnaires
                 mat_dist[i][j] = jaccard_index(texts[i], texts[j])
     return mat_dist
 
-print(make_mat_dist(files_to_dicts(["text_wo","text2_wo"])))
-
+#Creats a geometric graph from the matrix by choosing the "edge limit" we eliminate edeges between nodes which have a distance > "edge"
 def make_graph(mat_dist, edge):
-    graph = []
+    graph = [[0 for i in range(len(mat_dist))] for j in range(len(mat_dist))]
     for i in range(len(mat_dist)):
         for j in range(len(mat_dist[i])):
             if i == j:
                 graph[i][j] = 0
-            if mat_dist[i][j] >= edge:
+            if mat_dist[i][j] <= edge:
                 graph[i][j] = mat_dist[i][j]
             else:
                 graph[i][j] = INF
 
     return graph
-
 
 def print_solution(dist, v):
     for i in range(v):
