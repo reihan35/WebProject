@@ -4,6 +4,7 @@ INF = 99999
 v1 = {"bien":1,"mange":1,"midi":1}
 u1 = {"bien":1,"mange":1,"midi":1,"dormi":1,"cours":1}
 
+#function whcihe parses a file into a dictionary
 def file_to_dict(name):
     fp = open(name, 'r')
     line = fp.readline()
@@ -12,22 +13,23 @@ def file_to_dict(name):
     while line:
         if i!=0:
             print(line)
-            data = line.split("      ")
-            print(data[0])
-            data2 = data[0].split
-            print(data2[0])
-            d[data2[1]] = data2[0]
+            line = line[1:]
+            data = line.split()
+            d[data[1]] = int(data[0])
             line = fp.readline()
         else:
             i=1
             line = fp.readline()
-
-
-
     return d
 
-file_to_dict("texte1_words")
+#Transformation of a set a file to a list of dictionaries
+def files_to_dicts(names):
+    l = []
+    for n in names:
+        l.append( file_to_dict(n))
+    return l
 
+#Given two dictionaties of str:int this function calculates the Jaccard distance
 def jaccard_index(t1, t2):
     max_min = dict()
     for w in t1:
@@ -48,18 +50,29 @@ def jaccard_index(t1, t2):
             max_min[w] = (t2[w], 0)
     s = 0
     print(len(max_min))
+    print(max_min)
     for w in max_min:
         s = s + (max_min[w][0] - max_min[w][1])
         s2 = s + max_min[w][0]
 
     return s / s2
 
-def make_mat_dist(texts):
-    mat_dist = []
-    for t1 in texts:
-        for t2 in texts:
-            mat_dist[t1][t2] = jaccard_index(t1, t2)
+#Creation of the matrix of jaccard distances from a set of file in the form of a list of dictionaries
+def make_mat_dist(texts): #textes est une liste de dictionnaires
+    mat_dist = res = [ [ 0 for i in range(len(texts)) ] for j in range(len(texts)) ]
+
+    for i in range(len(texts)):
+        #j = i+1
+        for j in range(len (texts)):
+            if (i!=j):
+                print(i)
+                print(j)
+                print(len(texts))
+                print("je suis la" + str(jaccard_index(texts[i], texts[j])))
+                mat_dist[i][j] = jaccard_index(texts[i], texts[j])
     return mat_dist
+
+print(make_mat_dist(files_to_dicts(["text_wo","text2_wo"])))
 
 def make_graph(mat_dist, edge):
     graph = []
