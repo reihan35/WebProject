@@ -20,8 +20,8 @@ def fill_data (occur, ind_book):
         data[occur[1]] = [0]*ind_book + [occur[0]]
 
 def fill_empty_data (ind_book):
-    """ Complete the json with the words that have no occurrence in the book indexed by ind_book """
-    [data[w].append(0) for w in data.keys() if len(data[w]) < ind_book]
+    """ Add 0 if data[word] has no value for this book """
+    [data[word].append(0) for word in data.keys() if len(data[word]) == ind_book ]
 
 def read(book, ind_book):
     """ Open a book and record each word with its number of occurences. """
@@ -36,7 +36,6 @@ def read(book, ind_book):
     [fill_data(occur, ind_book) for occur in word_frequencies(txt)]
     fill_empty_data(ind_book)
 
-    # incr the book counter
     print("book %d" % ind_book)
 
 
