@@ -11,20 +11,20 @@ def word_frequencies(text):
                         for word in text.lower().split())
     return ((len(list(group)), word) for word, group in groupby(sorted_words))
 
-def fill_data (occur, i):
+def fill_data (occur, ind_book):
     """ Fill the json data which already received i books
         with the occurence (n, word). """
     if occur[1] in data.keys():
         data[occur[1]].append(occur[0])  
     else:
-        data[occur[1]] = [0]*i + [occur[0]]
+        data[occur[1]] = [0]*ind_book + [occur[0]]
 
-def fill_empty_data ():
-    """ Complete the json with the words that have no occurrence in the book number COUNT """
-    [data[w].append(0) for w in data.keys() if len(data[w]) < COUNT]
+def fill_empty_data (ind_book):
+    """ Complete the json with the words that have no occurrence in the book indexed by ind_book """
+    [data[w].append(0) for w in data.keys() if len(data[w]) < ind_book]
 
-def read(book):
-    """ Open a book and record its words with the occurences of the words. """
+def read(book, ind_book):
+    """ Open a book and record each word with its number of occurences. """
     # read the book
     f = open(book_dir + "/" + book, "r")
     txt = ' '.join(f.readlines())
@@ -33,12 +33,11 @@ def read(book):
     txt = re.sub(r'[^a-zA-Z]+', ' ', txt)
 
     # Fill the json data
-    [fill_data(occur,COUNT) for occur in word_frequencies(txt)]
-    fill_empty_data()
+    [fill_data(occur, ind_book) for occur in word_frequencies(txt)]
+    fill_empty_data(ind_book)
 
     # incr the book counter
-    print("book %d" % COUNT)
-    incr()
+    print("book %d" % ind_book)
 
 
 
@@ -55,15 +54,9 @@ if __name__ == "__main__":
     # Json data
     data = {}
 
-    # To count the number of books already read
-    COUNT = 0
-    def incr():
-        global COUNT
-        COUNT += 1
-
     # Read books
     print("** Reading books ..")
-    [read(books[i]) for i in range(len(books))]
+    [read(books[i], i) for i in range(len(books))]
 
     # Write the json data
     print ("** Writing data ..")
