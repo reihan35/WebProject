@@ -30,7 +30,7 @@ def read(book, ind_book):
     txt = ' '.join(f.readlines())
 
     # Replace everything which is not a letter by a space
-    txt = re.sub(r'[^a-zA-Z]+', ' ', txt)
+    txt = re.sub(r'[^a-zA-Z ]+', ' ', txt)
 
     # Fill the json data
     [fill_data(occur, ind_book) for occur in word_frequencies(txt)]
@@ -57,6 +57,8 @@ if __name__ == "__main__":
     print("** Reading books ..")
     [read(books[i], i) for i in range(len(books))]
 
+    print("** Time elapsed : %s seconds" % (time.time() - start_time))
+    
     # Write the json data
     print ("** Writing data ..")
     with open('data.txt', 'w') as outfile:
