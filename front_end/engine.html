@@ -1,17 +1,21 @@
 <html>
   <head>
-     <meta charset="UTF-8">
+      <link rel="shortcut icon" href="search_logo.png" type="image/x-icon"/>
+      <script type="text/javascript" src="http://code.jquery.com/jquery-1.7.1.min.js"></script>
+      <meta charset="UTF-8">
      <link rel="stylesheet" href="style.css">
-      <title>Awesome Search Box</title>
+      <title>LS</title>
    </head>
    <script src="file_to_db.js"></script>
    <body>
-       <h2>Library Search</h2>
-       <div class="search-box">
-       <input type="text" name="" class="search-txt" placeholder="Type to search"/>
-       <a class="search-btn" href="#">
-       <i class="fas fa-search"></i>
+       <a href="paris.jpg">
+        <img src="search_logo.png">
        </a>
-     </div>
+       <h2>Library Search</h2>
+       </a>
+       <form class="search" action="">
+          <input onmouseover="colorChange()" onmouseout="revert()" type="search" placeholder="Search here..." required>
+          <button type="submit">Search</button>
+       </form>   
    </body>
 </html>

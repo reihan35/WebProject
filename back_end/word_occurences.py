@@ -4,8 +4,8 @@ import re
 from itertools import groupby
 import json
 import networkx as nx
-from matplotlib.pyplot import show
 import numpy as np
+from matplotlib.pyplot import show
 
 # Index
 
@@ -73,7 +73,7 @@ if __name__ == "__main__":
     start_time = time.time()  
 
     # Directory of the books
-    book_dir = "DataBase"
+    book_dir = "book_test"
 
     # Load books file names
     books = [b for b in os.listdir(book_dir) if b[-4:] == ".txt"]

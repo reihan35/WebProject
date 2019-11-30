@@ -1,66 +1,22 @@
-body {
- margin: 0;
- padding: 0;
- background: #b9c8d4bd;
-}
+@import url(https://fonts.googleapis.com/css?family=Jura);
+body {background:url(library.jpg) no-repeat center center fixed; background-size:cover;}
 
-.search-box {
- position: absolute;
- top: 50%;
- left: 50%;
- transform: translate(-50%, -50%);
- background: #2f3640;
- height: 40px;
- border-radius: 40px;
- padding: 10px;
-}
+.search {width: 500px;height: 40px;margin: 150px auto;background: #444;background:#ccc;border-radius:  3px;border: 1px solid #fff;}
 
-.search-box:hover > .search-txt {
- width: 240px;
- padding: 0 6px;
-}
+.search input {width: 370px;padding: 10px 5px;float: left;color:#444;font:message-box ;border: 0;background:transparent;border-radius: 3px 0 0 3px;}
 
-.search-box:hover > .search-btn {
- background: white;
- color: black;
-}
+.search input:focus {outline: 0;background: transparent}
 
-.search-btn {
- color: #e84118;
- float: right;
- width: 40px;
- height: 40px;
- border-radius: 50%;
- background: #2f3640;
- display: flex;
- justify-content: center;
- align-items: center;
- transition: 0.4s;
- color: white;
- cursor: pointer;
-}
+.search button {position: relative;float: right;border: 0;padding: 0;cursor: pointer;height: 40px;width: 120px;color: #fff;background: transparent;border-left: 1px solid #fff;border-radius: 0 3px 3px 0;}   
+.search:hover body {background-color: yellow;}
+.search button:hover {background: #fff;color:#444;}
+.search button:active {box-shadow: 0px 0px 12px 0px rgba(225, 225, 225, 1);}
 
-.search-btn > i {
- font-size: 30px;
-}
-
-.search-txt {
- border: none;
- background: none;
- outline: none;
- float: left;
- padding: 0;
- color: white;
- font-size: 16px;
- transition: 0.4s;
- line-height: 40px;
- width: 0px;
- font-weight: bold;
-}
+.search button:focus {outline: 0;}
 
 h2 {
     display: block;
-    font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    font-family:'jura';
     font-size: 2em;
     margin-top: 6cm;
     margin-bottom: 0.67em;
@@ -68,3 +24,15 @@ h2 {
     margin-right: 0;
     font-weight: bold;
   }
+
+  img {
+    border-radius: 1px;
+    padding: 1px;
+    width: 150px;
+    position:fixed;
+    left: 45%;
+    top: 10%;
+    
+  }
+  
+  
