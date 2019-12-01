@@ -1,0 +1,25 @@
+{
+  "name": "front_end",
+  "version": "1.0.0",
+  "description": "for DAAR",
+  "main": "file_to_db.js",
+  "scripts": {
+    "test": "try"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/reihan35/WebProject.git"
+  },
+  "keywords": [
+    "web"
+  ],
+  "author": "Fati and Alex",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/reihan35/WebProject/issues"
+  },
+  "homepage": "https://github.com/reihan35/WebProject#readme",
+  "dependencies": {
+    "firebase": "^7.5.0"
+  }
+}

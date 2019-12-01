@@ -1,21 +1,26 @@
 <html>
   <head>
-      <link rel="shortcut icon" href="search_logo.png" type="image/x-icon"/>
-      <script type="text/javascript" src="http://code.jquery.com/jquery-1.7.1.min.js"></script>
-      <meta charset="UTF-8">
-     <link rel="stylesheet" href="style.css">
-      <title>LS</title>
+     <link rel="shortcut icon" href="search_logo.png" type="image/x-icon"/>
+     <meta charset="UTF-8">
+     <link rel="stylesheet" href="engine.css">
+     <title>LS</title>
    </head>
-   <script src="file_to_db.js"></script>
    <body>
-       <a href="paris.jpg">
-        <img src="search_logo.png">
-       </a>
-       <h2>Library Search</h2>
-       </a>
-       <form class="search" action="">
-          <input onmouseover="colorChange()" onmouseout="revert()" type="search" placeholder="Search here..." required>
-          <button type="submit">Search</button>
-       </form>   
+      <a>
+         <img src="search_logo.png">
+         <h2>Library Search</h2>
+      </a>
+      <form id ="s2" class="search" action="myFunction()">
+         <input id = "s" name="search" type="search" placeholder="Search here..." required>
+         <button onclick="searchBooksWhereKW()" type="button" value="submit">Search</button>
+      </form>
+      <!-- Firebase App (the core Firebase SDK) is always required and must be listed first -->
+      <script src="https://www.gstatic.com/firebasejs/7.5.0/firebase-app.js"></script>
+      <!-- If you enabled Analytics in your project, add the Firebase SDK for Analytics -->
+      <!-- Add Firebase products that you want to use -->
+      <script src="https://www.gstatic.com/firebasejs/7.5.0/firebase-auth.js"></script>
+      <script src="https://www.gstatic.com/firebasejs/7.5.0/firebase-firestore.js"></script>
+      <script src="https://www.gstatic.com/firebasejs/3.1.0/firebase-database.js"></script>
+      <script src = "main.js"></script>
    </body>
 </html>
