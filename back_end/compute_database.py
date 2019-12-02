@@ -92,7 +92,7 @@ if __name__ == "__main__":
             books_index[i][words[w]] = occ
 
     print("** Time fill books : %.3f seconds" % (time.time() - t_words))
-
+    
 
     # Number of words in each books
 
@@ -103,7 +103,7 @@ if __name__ == "__main__":
 
     # Compute jaccard distance
 
-    t_jac = time.time()
+    """t_jac = time.time()
 
     d_jaccard = [[0]*len(books) for _ in range(len(books))]
 
@@ -129,11 +129,11 @@ if __name__ == "__main__":
     t_centr = time.time()
     closeness = nx.closeness_centrality(G)
     print("** Time centrality : %.3f seconds" % (time.time() - t_centr))
-
+    """
 
     # Write the json data
 
-    """
+    
     t_json = time.time()
 
     words_json = {}
@@ -149,6 +149,6 @@ if __name__ == "__main__":
         json.dump({"data":json_file}, outfile)
 
     print("** Time JSON : %.3f seconds" % (time.time() - t_json))
-    """
+    
 
     print("** Time elapsed : %.3f seconds" % (time.time() - start_time))
