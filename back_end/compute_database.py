@@ -50,7 +50,7 @@ def build_graph(d_jaccard, seuil):
 
 if __name__ == "__main__":
     
-    nb_books = 1500
+    nb_books = 200
     start_time = time.time()  
 
     # Directory of the books
@@ -103,7 +103,7 @@ if __name__ == "__main__":
 
     # Compute jaccard distance
 
-    """t_jac = time.time()
+    t_jac = time.time()
 
     d_jaccard = [[0]*len(books) for _ in range(len(books))]
 
@@ -129,21 +129,35 @@ if __name__ == "__main__":
     t_centr = time.time()
     closeness = nx.closeness_centrality(G)
     print("** Time centrality : %.3f seconds" % (time.time() - t_centr))
-    """
+    
 
     # Write the json data
 
     
     t_json = time.time()
 
+    """
     words_json = {}
     for w in list(words.keys()):
         for i in range(len(books_index)):
             words_json[w] = [int(books_index[i][words[w]]) for i in range(len(books_index))]
+    """
 
     json_file = {}
-    json_file["words"] = words_json
-    json_file["books"] = books
+
+    for i in range(len(books)):
+        words_of_book = dict()
+        for w in list(words.keys()):
+            occ = int(books_index[i][words[w]])
+            if occ != 0:
+                words_of_book[w] = occ
+        json_file[books[i]] = {
+            "clos_index" : closeness[i],
+            "words" : words_of_book
+        }
+        print("Book recorded : %d / %d" % (i,len(books)))
+
+    print("json computed !")
 
     with open('data.json', 'w', encoding='utf-8') as outfile:
         json.dump({"data":json_file}, outfile)
