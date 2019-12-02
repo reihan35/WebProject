@@ -1,5 +1,5 @@
 @import url(https://fonts.googleapis.com/css?family=Jura);
-body {background:url(library.jpg) no-repeat center center fixed; background-size:cover;}
+body {background-color: antiquewhite;}
 
 .search {width: 500px;height: 40px;margin: 150px auto;background: #444;background:#ccc;border-radius:  3px;border: 1px solid #fff;}
 
