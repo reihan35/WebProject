@@ -57,6 +57,8 @@ Book.prototype.getHTML =
 function searchBooksWhereKW() { 
   kw = document.getElementById("s").value;
   searchDB(kw);
+  $("body").empty();
+  $("body").append(header);
 
 };
 
@@ -90,8 +92,6 @@ function searchDB(key){
             b.author = "machin bidule"
             b.data = "5 mars 2019"
             b.link = "http://www.gutenberg.org/cache/epub/"+ doc.id +"/"+ doc.id + ".txt"
-            $("body").empty();
-            $("body").append(header);
             $(".books-list").append(b.getHTML());
 
         });
