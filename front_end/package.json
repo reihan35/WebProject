@@ -21,5 +21,6 @@
   "homepage": "https://github.com/reihan35/WebProject#readme",
   "dependencies": {
     "firebase": "^7.5.0"
-  }
+  },
+  "devDependencies": {}
 }

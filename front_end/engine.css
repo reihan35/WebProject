@@ -1,16 +1,16 @@
 @import url(https://fonts.googleapis.com/css?family=Jura);
-body {background-color: antiquewhite;}
+body {background-color: white;}
 
-.search {width: 500px;height: 40px;margin: 150px auto;background: #444;background:#ccc;border-radius:  3px;border: 1px solid #fff;}
+.search {width: 500px;height: 40px;margin: 150px auto;margin-top: 1cm;background: #444;background:#ccc;border-radius:  3px;border: 1px solid #fff;}
 
 .search input {width: 370px;padding: 10px 5px;float: left;color:#444;font:message-box ;border: 0;background:transparent;border-radius: 3px 0 0 3px;}
 
 .search input:focus {outline: 0;background: transparent}
 
 .search button {position: relative;float: right;border: 0;padding: 0;cursor: pointer;height: 40px;width: 120px;color: #fff;background: transparent;border-left: 1px solid #fff;border-radius: 0 3px 3px 0;}   
-.search:hover body {background-color: yellow;}
-.search button:hover {background: #fff;color:#444;}
+.search button:hover {color:white;background:#000019;}
 .search button:active {box-shadow: 0px 0px 12px 0px rgba(225, 225, 225, 1);}
+.search:hover {box-shadow: -1px 2px 5px 1px grey; }
 
 .search button:focus {outline: 0;}
 
@@ -18,21 +18,91 @@ h2 {
     display: block;
     font-family:'jura';
     font-size: 2em;
-    margin-top: 6cm;
+    margin-top: 0.5cm;
     margin-bottom: 0.67em;
     margin-left: 18.3cm;
     margin-right: 0;
     font-weight: bold;
+    position: relative;
   }
 
   img {
     border-radius: 1px;
     padding: 1px;
     width: 150px;
-    position:fixed;
+    position: relative;;
     left: 45%;
-    top: 10%;
+    margin-top: 2cm;
     
   }
+
+  .book {
+    font-family: Arial, Helvetica, sans-serif;
+    margin-top: 3cm;
+    margin-left: 50px;
+}
   
-  
+
+.header {
+	background: #ffffff;
+    width: 100%;
+    height: 64px;
+    box-shadow: 0px 0px 10px -4px rgba(0,63,150,1);
+    z-index: 99;
+    position: fixed;
+    top: 0;	
+}
+
+
+
+.header-wrapper {
+	width: 100%;
+	justify-content: baseline;
+    display: flex;
+    margin: auto;
+}
+
+.logo {
+	width: 52px;
+  height: 52px;
+  margin-left: 40px;
+  margin-right: 50px;
+  margin-top: -70px;
+  transition: .5s;
+  cursor: pointer;
+    
+            
+}
+
+.logo:hover {
+	transition: .5s;
+	transform: rotate(20deg);
+}
+
+.logo img {
+	width: 100%;
+}
+
+.books-list {
+  font-family: Arial, Helvetica, sans-serif;
+  margin-top: 3cm;
+  margin-left: 70px;
+}
+
+
+.search-zone input {
+	width: 470px;
+    padding: 15px 60px 15px 25px;
+    border-radius: 3px;
+    border: none;
+    background: #EEE;
+    margin: 10px 10px 10px 10px;
+}
+
+.searc-zone button {position: relative;float: right;border: 0;padding: 0;cursor: pointer;height: 40px;width: 120px;color: #fff;background: transparent;border-left: 1px solid #fff;border-radius: 0 3px 3px 0;}   
+.search-zone button:hover {color:white;background:#000019;}
+.search-zone button:active {box-shadow: 0px 0px 12px 0px rgba(225, 225, 225, 1);}
+.search-zone button:focus {outline: 0;}
+
+
+
