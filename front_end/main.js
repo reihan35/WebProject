@@ -73,6 +73,11 @@ const header = "<div class=\"header\">" +
                       "<button id=\"b\" onclick=\"searchBooksWhereKW()\" type=\"button\" value=\"submit\">Search</button>" +
                     "</form>"+
                   "</div>"+
+                  "<h3>Advanced Search</h3>" +
+                  "<label class=\"switch2\">" +
+                          "<input type=\"checkbox\">" +
+                          "<span class=\"slider round\"></span>" +
+                  "</label>" +
                 "</div>"+
               "</div>" +
               "<div class=\"books-list\"></div>"
