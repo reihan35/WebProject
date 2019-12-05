@@ -41,7 +41,7 @@ def read(book, ind_book):
     [fill_index(occur, ind_book) for occur in word_frequencies(txt)]
     fill_empty_index(ind_book)
 
-    print("book %d" % ind_book)
+    print("book %d / %d" % (ind_book, len(books)))
 
 
 def d_jaccard_of(i,j, book_index):
@@ -70,13 +70,15 @@ def build_graph(d_jaccard, seuil):
 
 if __name__ == "__main__":
 
+    nb_books = 20
+
     start_time = time.time()  
 
     # Directory of the books
     book_dir = "book_test"
 
     # Load books file names
-    books = [b for b in os.listdir(book_dir) if b[-4:] == ".txt"]
+    books = [b for b in os.listdir(book_dir)]#[:20]
 
     # Data to fill
     index = {}
@@ -89,15 +91,16 @@ if __name__ == "__main__":
     print("Nombre de mots : %d" % len(index))
 
     t_convert = time.time()
-    nb_words = [sum([index[word][i] for word in index.keys()]) for i in range(len(books))]
+    
     book_index = np.array([[index[word][i] for word in index.keys()] for i in range(len(books))])
+    nb_words = [np.sum(book_index[i]) for i in range(len(books))]
     print("** Time convert : %.3f seconds" % (time.time() - t_convert))
 
     t_jac = time.time()
 
     # Fill d_jaccard
     for i in range(len(books)):
-        #print("line %d" % i)
+        print("line %d / %d" % (i, len(books)))
         for j in range(i):
             d_jaccard[i][j] = d_jaccard_of(i,j, book_index)
             d_jaccard[j][i] = d_jaccard[i][j]
@@ -121,11 +124,10 @@ if __name__ == "__main__":
 
     # Write the json data
     print ("** Writing data ..")
-    with open('data.txt', 'w') as outfile:
+    with open('data.json', 'w') as outfile:
         json.dump({"books":books}, outfile)
         json.dump({"index":index}, outfile)
         json.dump({"jaccard_distance":d_jaccard}, outfile)
         json.dump({"closeness":closeness}, outfile)
         
     print("** Time elapsed : %.3f seconds" % (time.time() - start_time))
-    
