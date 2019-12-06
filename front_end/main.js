@@ -55,10 +55,22 @@ Book.prototype.getHTML =
 
 //Gets the value given by the user in the search input
 function searchBooksWhereKW() { 
-  kw = document.getElementById("s").value;
-  searchDB(kw);
-  $("body").empty();
-  $("body").append(header);
+  if ($('#cb2').is(':checked')){
+    $("body .books-list").empty()
+    kw = document.getElementById("s").value;
+    searchDB(kw);
+  }
+  else {
+    if($('#cb1').is(':checked')){
+      //On change la fonction avec la deuxime facon avec les regex
+      kw = document.getElementById("s").value;
+      searchDB(kw);
+    }
+    kw = document.getElementById("s").value;
+    searchDB(kw);
+    $("body").empty();
+    $("body").append(header);
+  }
 
 };
 
@@ -75,7 +87,7 @@ const header = "<div class=\"header\">" +
                   "</div>"+
                   "<h3>Advanced Search</h3>" +
                   "<label class=\"switch2\">" +
-                          "<input type=\"checkbox\">" +
+                          "<input id=\"cb2\" type=\"checkbox\">" +
                           "<span class=\"slider round\"></span>" +
                   "</label>" +
                 "</div>"+

@@ -1,5 +1,6 @@
 @import url(https://fonts.googleapis.com/css?family=Jura);
-body {background-color: white;}
+body {background-color: white; overflow-x: hidden;
+}
 
 .search {width: 500px;height: 40px;margin: 150px auto;margin-top: 1cm;background: #444;background:#ccc;border-radius:  3px;border: 1px solid #fff;}
 
@@ -248,7 +249,7 @@ h3{
   display: inline-block;
   font-family:'jura';
   font-weight: bold;
-  margin-left: 5cm;
+  margin-left: 16cm;
 }
 
 
