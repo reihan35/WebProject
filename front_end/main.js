@@ -21,16 +21,6 @@ firebase.initializeApp(config);
 // Get the input field
 var input = document.getElementById("s");
 
-// Execute a function when the user releases a key on the keyboard
-input.addEventListener("keyup", function(event) {
-  // Number 13 is the "Enter" key on the keyboard
-  if (event.keyCode === 13) {
-    // Cancel the default action, if needed
-    event.preventDefault();
-    // Trigger the button element with a click
-    document.getElementById("b").click();
-  }
-});
 
 
 //Creation of Book Object which will be used to add html
@@ -81,7 +71,7 @@ const header = "<div class=\"header\">" +
                   "</div>" +
                   "<div class=\"search-zone\">" +
                     "<form id =\"s2\" class=\"search2\" >" +
-                      "<input id = \"s\" name=\"search2\" type=\"search\" placeholder=\"Search here...\" required>" +
+                      "<input id = \"s\" name=\"search2\" type=\"search\" onkeypress=\"searchBooksWhereKW()\" placeholder=\"Search here...\" required>" +
                       "<button id=\"b\" onclick=\"searchBooksWhereKW()\" type=\"button\" value=\"submit\">Search</button>" +
                     "</form>"+
                   "</div>"+
@@ -118,4 +108,12 @@ function searchDB(key){
     });
 
 };
+
+
+$( "#s" ).keypress(function( event ) 
+{
+  if ( event.which == 13 ) {
+    document.getElementById("b").click();
+  }
+});
 
