@@ -3,16 +3,18 @@ import time
 import json
 import networkx as nx
 import numpy as np
+import numpy.ma as ma
 from matplotlib.pyplot import show # to show the graph
+
 
 # Project files
 import book_functions as bf
 
 
 def d_jaccard_of(i,j, book_index):
+
     M = np.sum(
-        book_index[i] * (book_index[i] - book_index[j] >= 0) 
-        + book_index[j] * (book_index[i] - book_index[j] < 0)
+        np.maximum(book_index[i], book_index[j])
         )
 
     m = nb_words_of_book[i] + nb_words_of_book[j] - M
@@ -29,7 +31,6 @@ def build_graph(d_jaccard, seuil):
         if d_jaccard[i][j] < seuil)
 
     return G
-
 
 
 if __name__ == "__main__":
@@ -62,26 +63,27 @@ if __name__ == "__main__":
     t_words = time.time()
 
     ind_of_word = dict()
+    word_list = []
 
     print("Record words of book :")
     for i in range(len(books)):
         for w in bf.words_of(books[i]):
             if not w in ind_of_word.keys():
                 ind_of_word[w] = len(ind_of_word.keys())
+                word_list.append(w)
         if (i % 10 == 0):
             print("%d / %d" % (i, len(books)))
-    print("Nb words : %d" % len(ind_of_word))
-    print("Mots de taille < 3 : %d" % len([w for w in ind_of_word.keys() if len(w) < 3]))
-    print("Mots de taille 3 : %d" % len([w for w in ind_of_word.keys() if len(w) == 3]))
+    print("Nb words : %d" % len(word_list))
+    print("Mots de taille < 3 : %d" % len([w for w in word_list if len(w) < 3]))
+    print("Mots de taille 3 : %d" % len([w for w in word_list if len(w) == 3]))
 
     print("** Time words : %.3f seconds" % (time.time() - t_words))
 
-    t_fill = time.time()
-
-
     # Building the index of books
 
-    books_index = np.zeros((len(books), len(ind_of_word.keys())), dtype=int)
+    t_fill = time.time()
+
+    books_index = np.zeros((len(books), len(word_list)), dtype=int)
 
     print("Fill index for book :")
     for i in range(len(books)):
@@ -91,13 +93,16 @@ if __name__ == "__main__":
         for (w, occ) in bf.word_frequencies_of(books[i]):
             books_index[i][ind_of_word[w]] = occ
 
-    print("** Time fill books : %.3f seconds" % (time.time() - t_words))
+    print("** Time fill books : %.3f seconds" % (time.time() - t_fill))
     
 
     # Number of words in each books
 
     t_nbwords = time.time()
     nb_words_of_book = np.array([np.sum(books_index[i]) for i in range(len(books))])
+
+    word_array = np.array(word_list)
+
     print("** Time sum words : %.3f seconds" % (time.time() - t_nbwords))
 
 
@@ -107,7 +112,7 @@ if __name__ == "__main__":
         t_jac = time.time()
 
         d_jaccard = [[0]*len(books) for _ in range(len(books))]
-
+        
         for i in range(len(books)):
             print("Jaccard %d / %d" % (i, len(books)))
             for j in range(i):
@@ -115,7 +120,6 @@ if __name__ == "__main__":
                 d_jaccard[j][i] = d_jaccard[i][j]
 
         print("** Time jaccard : %.3f seconds" % (time.time() - t_jac))
-
 
     # Build graph & centrality index
     G = nx.Graph()
@@ -136,15 +140,21 @@ if __name__ == "__main__":
 
     json_file = {}
 
+
     print("Build json data :")
     for i in range(len(books)):
-        json_file[book_name[i]] = dict()
-        words_of_book = [w for w in ind_of_word.keys() if books_index[i][ind_of_word[w]] != 0]
-        json_file[book_name[i]]["words"] = words_of_book
+        book_data = dict()
+        
+        masked = ma.masked_array(word_array, mask= books_index[i] == 0)
+        words_of_book = list(masked[~masked.mask])
+        
+        book_data["words"] = words_of_book
         for info in books_info[i].keys():
-            json_file[book_name[i]][info] = books_info[i][info]
+            book_data[info] = books_info[i][info]
         if do_centrality:
-            json_file[book_name[i]]["clos_index"] = closeness[i]
+            book_data["clos_index"] = closeness[i]
+
+        json_file[book_name[i]] = book_data
 
         if i % 10 == 0:
             print("%d / %d" % (i,len(books)))

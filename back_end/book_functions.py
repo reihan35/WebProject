@@ -63,3 +63,7 @@ def get_info_of(path):
                 break
     
     return infos
+
+
+"""if len(list(infos.keys())) != 3:
+raise("Problème lecture, infos manquantes")"""
