@@ -10,6 +10,8 @@ from matplotlib.pyplot import show # to show the graph
 # Project files
 import book_functions as bf
 
+seuil_jaccard = 0.7
+
 
 def d_jaccard_of(i,j, book_index):
 
@@ -43,12 +45,14 @@ if __name__ == "__main__":
     parser.add_argument("-n", "--nb_books", type=int)
     parser.add_argument("-j", "--no_jaccard", action="store_true")
     parser.add_argument("-c", "--no_centrality", action="store_true")
+    parser.add_argument("-w", "--no_write_json", action="store_true")
 
     args = parser.parse_args()
 
     nb_book_max = args.nb_books
     do_jaccard = not args.no_jaccard
     do_centrality = do_jaccard & (not args.no_centrality)
+    write_json = not args.no_write_json
 
     
     book_name = bf.import_books(book_dir, max=nb_book_max)
@@ -121,50 +125,71 @@ if __name__ == "__main__":
 
         print("** Time jaccard : %.3f seconds" % (time.time() - t_jac))
 
+
     # Build graph & centrality index
     G = nx.Graph()
     closeness = []
     if do_centrality:
         t_graph = time.time()
-        G = build_graph(d_jaccard, 0.7)
+        G = build_graph(d_jaccard, seuil_jaccard)
         print("** Time build graph : %.3f seconds" % (time.time() - t_graph))
 
+        print("Computing centrality index ..")
         t_centr = time.time()
         closeness = nx.closeness_centrality(G)
         print("** Time centrality : %.3f seconds" % (time.time() - t_centr))
     
 
+    # Get the neighbours
+
+    time_neigh = time.time()
+
+    neighbours = []
+    for i in range(len(books)):
+        neighbours.append([book_name[j] for j in range(len(books)) if d_jaccard[i][j] < seuil_jaccard])
+
+    print("** Time compute neighbours : %.3f seconds" % (time.time() - t_centr))
+
+
     # Write the json data
     
-    t_json = time.time()
+    if write_json:
 
-    json_file = {}
+        t_json = time.time()
 
+        json_file = {}
 
-    print("Build json data :")
-    for i in range(len(books)):
-        book_data = dict()
+        print("Build json data :")
+        for i in range(len(books)):
+
+            book_data = dict()
+            
+            # Record the words
+            masked = ma.masked_array(word_array, mask= books_index[i] == 0)
+            words_of_book = list(masked[~masked.mask])
+            book_data["words"] = words_of_book
+
+            # Record title author and release
+            for info in books_info[i].keys():
+                book_data[info] = books_info[i][info]
+            if do_centrality:
+                book_data["clos_index"] = closeness[i]
+
+            # Record the neighbours of the book
+            book_data["neighbours"] = neighbours[i]
+
+            # Place it on the json file
+            json_file[book_name[i]] = book_data
+
+            if i % 10 == 0:
+                print("%d / %d" % (i,len(books)))
+
+        print("Writing the output json file..")
+
+        with open('data.json', 'w', encoding='utf-8') as outfile:
+            json.dump({"data":json_file}, outfile)
+
+        print("** Time JSON : %.3f seconds" % (time.time() - t_json))
         
-        masked = ma.masked_array(word_array, mask= books_index[i] == 0)
-        words_of_book = list(masked[~masked.mask])
-        
-        book_data["words"] = words_of_book
-        for info in books_info[i].keys():
-            book_data[info] = books_info[i][info]
-        if do_centrality:
-            book_data["clos_index"] = closeness[i]
-
-        json_file[book_name[i]] = book_data
-
-        if i % 10 == 0:
-            print("%d / %d" % (i,len(books)))
-
-    print("Writing the output json file..")
-
-    with open('data.json', 'w', encoding='utf-8') as outfile:
-        json.dump({"data":json_file}, outfile)
-
-    print("** Time JSON : %.3f seconds" % (time.time() - t_json))
-    
 
     print("** Time elapsed : %.3f seconds" % (time.time() - start_time))
