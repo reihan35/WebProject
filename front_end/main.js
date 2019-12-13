@@ -72,7 +72,8 @@ const header = "<div class=\"header\">" +
                   "<div class=\"search-zone\">" +
                     "<form id =\"s2\" class=\"search2\" >" +
                       "<input id = \"s\" name=\"search2\" type=\"search\" placeholder=\"Search here...\" required>" +
-                      "<button id=\"b\" onclick=\"searchBooksWhereKW()\" type=\"button\" value=\"submit\">Search</button>" +
+                      "<button id=\"ib\" type=\"submit\"  onclick=\"searchBooksWhereKW()\" ><i class=\"fa fa-search\"></i></button>" +
+                      //"<button id=\"b\" onclick=\"searchBooksWhereKW()\" type=\"button\" value=\"submit\">Search</button>" +
                     "</form>"+
                   "</div>"+
                   "<h3>Advanced Search</h3>" +
@@ -96,9 +97,8 @@ function searchDB(key){
     .then(function(querySnapshot) {
         querySnapshot.forEach(function(doc) {
             wait=wait + 1;
-            console.log("je SUIS I" + wait);
             // doc.data() is never undefined for query doc snapshots
-            console.log(doc.id, " => ", doc.data());
+            //console.log(doc.id, " => ", doc.data());
             var b = new Book();
             b.title = doc.data().title;
             b.author = doc.data().author;
@@ -107,9 +107,12 @@ function searchDB(key){
             $(".books-list").append(b.getHTML());
             if(wait<3){
               for (var i = 0; i < 3; i++) {
+                s = doc.data().neighbours[i]
+                console.log("JE COMPRENDS +++++++++++" + db.doc("data/"+s).title)
+
                 $(".md-chips").append(
                   "<div class=\"md-chip\">" +
-                   doc.data().neighbours[i] + 
+                    doc.data().neighbours[i] + 
                 "</div>");
               } 
             }
