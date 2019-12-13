@@ -92,8 +92,8 @@ h2 {
 }
 
 .logo:hover {
-	transition: .5s;
-	transform: rotate(20deg);
+
+  background-image: url(closed.png) no-repeat;
 }
 
 .logo img {

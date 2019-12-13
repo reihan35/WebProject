@@ -67,7 +67,7 @@ function searchBooksWhereKW() {
 const header = "<div class=\"header\">" + 
                 "<div class=\"header-wrapper\">" + 
                   "<div class=\"logo\">" +
-                      "<img src=\"search_logo.png\" alt=\"bird_logo\">" + 
+                      "<img src=\"book4.png\" alt=\"bird_logo\">" + 
                   "</div>" +
                   "<div class=\"search-zone\">" +
                     "<form id =\"s2\" class=\"search2\" >" +
