@@ -29,7 +29,7 @@ function Book(title, author, link,date){
   this.author = author;
   this.link = link;
   //this.centrality = centrality;
-  this.data = date;
+  this.date = date;
 }
 
 Book.prototype.getHTML =
@@ -71,7 +71,7 @@ const header = "<div class=\"header\">" +
                   "</div>" +
                   "<div class=\"search-zone\">" +
                     "<form id =\"s2\" class=\"search2\" >" +
-                      "<input id = \"s\" name=\"search2\" type=\"search\" onkeypress=\"searchBooksWhereKW()\" placeholder=\"Search here...\" required>" +
+                      "<input id = \"s\" name=\"search2\" type=\"search\" placeholder=\"Search here...\" required>" +
                       "<button id=\"b\" onclick=\"searchBooksWhereKW()\" type=\"button\" value=\"submit\">Search</button>" +
                     "</form>"+
                   "</div>"+
@@ -82,25 +82,37 @@ const header = "<div class=\"header\">" +
                   "</label>" +
                 "</div>"+
               "</div>" +
+              "<div class = \"su\"> Suggestions related to your search </div>" +
+              "<div class=\"md-chips\">" +
+              "</div>"+
               "<div class=\"books-list\"></div>"
 
-
+var wait = 0;
 //Searchs for a special key in the DB and add results in the html file
 function searchDB(key){
   var db = firebase.firestore();
-  db.collection("books").where("words","array-contains",key).orderBy("closeness")
+  db.collection("data").where("words","array-contains",key)//.orderBy("clos_index")
     .get()
     .then(function(querySnapshot) {
         querySnapshot.forEach(function(doc) {
+            wait=wait + 1;
+            console.log("je SUIS I" + wait);
             // doc.data() is never undefined for query doc snapshots
             console.log(doc.id, " => ", doc.data());
             var b = new Book();
-            b.title = doc.id;
-            b.author = "machin bidule"
-            b.data = "5 mars 2019"
-            b.link = "http://www.gutenberg.org/cache/epub/"+ doc.id +"/"+ doc.id + ".txt"
+            b.title = doc.data().title;
+            b.author = doc.data().author;
+            b.date = doc.data().release;
+            b.link = "http://www.gutenberg.org/cache/epub/"+ doc.id +"/pg"+ doc.id + ".txt"
             $(".books-list").append(b.getHTML());
-
+            if(wait<3){
+              for (var i = 0; i < 3; i++) {
+                $(".md-chips").append(
+                  "<div class=\"md-chip\">" +
+                   doc.data().neighbours[i] + 
+                "</div>");
+              } 
+            }
         });
     })
     .catch(function(error) {

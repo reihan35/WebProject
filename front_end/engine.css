@@ -1,6 +1,9 @@
 @import url(https://fonts.googleapis.com/css?family=Jura);
-body {background-color: white; overflow-x: hidden;
-}
+@import url(https://fonts.googleapis.com/css?family=Roboto);
+body {background-color: white; 
+     overflow-x: hidden;
+     font-family:"Roboto", sans-serif;
+    }
 
 .search {width: 500px;height: 40px;margin: 150px auto;margin-top: 1cm;background: #444;background:#ccc;border-radius:  3px;border: 1px solid #fff;}
 
@@ -27,6 +30,15 @@ h2 {
     position: relative;
   }
 
+  .su{
+    font-family:'jura';
+    font-weight: bold;
+    margin-top: 100px;
+    margin-left: 70px;
+
+  }
+
+
   img {
     border-radius: 1px;
     padding: 1px;
@@ -34,6 +46,7 @@ h2 {
     position: relative;;
     left: 45%;
     margin-top: 2cm;
+    
     
   }
 
@@ -83,7 +96,7 @@ h2 {
 
 .books-list {
   font-family: Arial, Helvetica, sans-serif;
-  margin-top: 3cm;
+  margin-top: 20px;
   margin-left: 70px;
 }
 
@@ -251,6 +264,26 @@ h3{
   font-weight: bold;
   margin-left: 16cm;
 }
+.md-chip {
+  display: inline-block;
+  background:#e0e0e0;
+  padding: 0 12px;
+  border-radius: 32px;
+  font-size: 18px;
+  height: 32px;
+  cursor: pointer;
+  margin-left: 70px;
+  margin-top: 20px;
+  font-family: "Roboto", sans-serif;
+  color: #333;
+}
+
+.md-chip:hover {
+  color:white;background:#000019;
+  cursor: pointer;
+
+}
+
 
 
 
