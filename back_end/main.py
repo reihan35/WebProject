@@ -5,6 +5,7 @@ import networkx as nx
 import numpy as np
 import numpy.ma as ma
 from matplotlib.pyplot import show # to show the graph
+import multiprocessing
 
 
 # Project files
@@ -23,9 +24,22 @@ def d_jaccard_of(i,j, book_index):
 
     return 1 - m/M
 
+def line_of_jac(i):
+    if i % 10 == 0:
+        print("Jaccard %d / %d" % (i, len(books)))
+    for j in range(i):
+        d_jaccard[i][j] = d_jaccard_of(i,j, books_index)
+        d_jaccard[j][i] = d_jaccard[i][j]
+
+def jac_part(i1, i2):
+    for i in range (i1,i2):
+        line_of_jac(i)
+
+
+
 def build_graph(d_jaccard, seuil):
     G = nx.Graph()
-    G.add_nodes_from(range(len(books)))
+    G.add_nodes_from(book_id)
     G.add_weighted_edges_from(
         (i,j,d_jaccard[i][j]) 
         for i in range(len(books)) 
@@ -39,8 +53,7 @@ if __name__ == "__main__":
 
     start_time = time.time()  
 
-    # Directory of the books
-    book_dir = "book_test"
+    # Get the argument values
     parser = argparse.ArgumentParser(description="Compute the database for Firebase")
     parser.add_argument("-n", "--nb_books", type=int)
     parser.add_argument("-j", "--no_jaccard", action="store_true")
@@ -54,9 +67,13 @@ if __name__ == "__main__":
     do_centrality = do_jaccard & (not args.no_centrality)
     write_json = not args.no_write_json
 
+    # Directory of the books
+    book_dir = "book_test"
     
-    book_name = bf.import_books(book_dir, max=nb_book_max)
-    books = [book_dir + "/" + b for b in book_name]
+    book_filename = bf.import_books(book_dir, max=nb_book_max)
+    book_id = [b.split('.')[0] for b in book_filename]
+    #book_num = [b.split('.')[0] for b in book_filename]
+    books = [book_dir + "/" + b for b in book_filename]
 
     t_binfo = time.time()
     books_info = [bf.get_info_of(b) for b in books]
@@ -82,6 +99,7 @@ if __name__ == "__main__":
     print("Mots de taille 3 : %d" % len([w for w in word_list if len(w) == 3]))
 
     print("** Time words : %.3f seconds" % (time.time() - t_words))
+
 
     # Building the index of books
 
@@ -112,27 +130,79 @@ if __name__ == "__main__":
 
     # Compute jaccard distance
     d_jaccard = []
+
+    mode = 0
+
     if do_jaccard:
         t_jac = time.time()
 
         d_jaccard = [[0]*len(books) for _ in range(len(books))]
+
+        if mode == 0:
         
-        for i in range(len(books)):
-            print("Jaccard %d / %d" % (i, len(books)))
-            for j in range(i):
-                d_jaccard[i][j] = d_jaccard_of(i,j, books_index)
-                d_jaccard[j][i] = d_jaccard[i][j]
+            for i in range(len(books)):
+                if i % 10 == 0:
+                    print("Jaccard %d / %d" % (i, len(books)))
+                for j in range(i):
+                    d_jaccard[i][j] = d_jaccard_of(i,j, books_index)
+                    d_jaccard[j][i] = d_jaccard[i][j]
 
-        print("** Time jaccard : %.3f seconds" % (time.time() - t_jac))
+            print("** Time jaccard : %.3f seconds" % (time.time() - t_jac))
 
+        elif mode == 1:
+
+            t_multijac = time.time()
+
+            d_jaccard = [[0]*len(books) for _ in range(len(books))]
+
+            """for i in range (len(books), 4):
+                process1.append(i)
+                process2.append(i+1)
+                process3.append(i+2)
+                process4.append(i+3)
+                
+                puis lancer le calcul sur les 4 process seulement : un par coeur"""
+
+            processes = []
+            size_compute = [
+                0,
+                len(books)//2, 
+                len(books)//2 + len(books)//4, 
+                len(books)//2 + len(books)//4 + len(books)//8, 
+                len(books)//2 + len(books)//4 + len(books)//8 + len(books)//16,
+                len(books) - len(books)//2 - len(books)//4 - len(books)//8 - len(books)//16
+            ]
+            for i in range(1,6):
+                p = multiprocessing.Process(target=jac_part, args=(size_compute[i-1], size_compute[i]))
+                processes.append(p)
+                p.start()
+                
+            print(len(processes))
+
+            for process in processes:
+                process.join()
+
+            #print(d_jaccard)
+
+            print("** Time multiprocess Jaccard : %.3f seconds" % (time.time() - t_multijac))
+
+        elif mode == 2:
+            t_pool = time.time()
+            pool = multiprocessing.Pool()
+            pool.map(line_of_jac, range(len(books)))
+            pool.close()
+            #print(d_jaccard)
+            print("** Time pool Jaccard : %.3f seconds" % (time.time() - t_pool))
 
     # Build graph & centrality index
     G = nx.Graph()
-    closeness = []
+    closeness = {}
     if do_centrality:
         t_graph = time.time()
         G = build_graph(d_jaccard, seuil_jaccard)
         print("** Time build graph : %.3f seconds" % (time.time() - t_graph))
+        #nx.draw(G)
+        #show()
 
         print("Computing centrality index ..")
         t_centr = time.time()
@@ -141,15 +211,16 @@ if __name__ == "__main__":
     
 
     # Get the neighbours
+    if do_jaccard:
+        time_neigh = time.time()
 
-    time_neigh = time.time()
+        neighbours = []
+        for i in range(len(books)):
+            ngh_i = [book_id[j] for j in range(len(books)) if d_jaccard[i][j] < seuil_jaccard]
+            ngh_i.sort(key=lambda i : closeness[i], reverse=True)
+            neighbours.append(ngh_i)
 
-    neighbours = []
-    for i in range(len(books)):
-        neighbours.append([book_name[j] for j in range(len(books)) if d_jaccard[i][j] < seuil_jaccard])
-
-    print("** Time compute neighbours : %.3f seconds" % (time.time() - t_centr))
-
+        print("** Time compute neighbours : %.3f seconds" % (time.time() - time_neigh))
 
     # Write the json data
     
@@ -160,14 +231,36 @@ if __name__ == "__main__":
         json_file = {}
 
         print("Build json data :")
+
+        word_json = dict()
+
+        print("-- Record word :")
+        for j in range(len(word_list)):
+
+            if j % 10000 == 0 :
+                print("%d / %d" % (j , len(word_list) ))
+
+            books_of_word = [book_id[i] for i in range(len(books)) if books_index[i][j] != 0]
+            books_of_word.sort(key= lambda id : closeness[id], reverse=True)
+
+            word_json[word_list[j]] = books_of_word
+
+        json_file["words"] = word_json    
+
+        print("Record books :")
         for i in range(len(books)):
 
             book_data = dict()
+
+            #book_data["ID"] = book_id[i]
+            #book_data["gut_num"] = book_num[i]
+
             
-            # Record the words
-            masked = ma.masked_array(word_array, mask= books_index[i] == 0)
+            # Record the words 
+            # GARDER IDEE !!
+            """masked = ma.masked_array(word_array, mask= books_index[i] == 0)
             words_of_book = list(masked[~masked.mask])
-            book_data["words"] = words_of_book
+            book_data["words"] = words_of_book"""
 
             # Record title author and release
             for info in books_info[i].keys():
@@ -179,9 +272,9 @@ if __name__ == "__main__":
             book_data["neighbours"] = neighbours[i]
 
             # Place it on the json file
-            json_file[book_name[i]] = book_data
+            json_file[book_id[i]] = book_data
 
-            if i % 10 == 0:
+            if i % 100 == 0:
                 print("%d / %d" % (i,len(books)))
 
         print("Writing the output json file..")
