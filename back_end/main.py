@@ -71,8 +71,8 @@ if __name__ == "__main__":
     book_dir = "book_test"
     
     book_filename = bf.import_books(book_dir, max=nb_book_max)
-    book_id = [b.split('.')[0] for b in book_filename]
-    #book_num = [b.split('.')[0] for b in book_filename]
+    book_id = list(range(len(book_filename))) 
+    book_num_gut = [b.split('.')[0] for b in book_filename]
     books = [book_dir + "/" + b for b in book_filename]
 
     t_binfo = time.time()
@@ -253,7 +253,7 @@ if __name__ == "__main__":
             book_data = dict()
 
             #book_data["ID"] = book_id[i]
-            #book_data["gut_num"] = book_num[i]
+            book_data["gut_num"] = book_num_gut[i]
 
             
             # Record the words 
