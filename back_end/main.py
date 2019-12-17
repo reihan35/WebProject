@@ -228,7 +228,7 @@ if __name__ == "__main__":
 
         t_json = time.time()
 
-        json_file = {}
+        #json_file = {}
 
         print("Build json data :")
 
@@ -245,9 +245,16 @@ if __name__ == "__main__":
 
             word_json[word_list[j]] = books_of_word
 
-        json_file["words"] = word_json    
+        #json_file["words"] = word_json    
+        # Write words collection
+        with open(str(len(books)) + '-data_words-.json', 'w', encoding='utf-8') as outfile:
+            json.dump({"words":word_json}, outfile)
+
 
         print("Record books :")
+
+        book_json = dict()
+
         for i in range(len(books)):
 
             book_data = dict()
@@ -272,15 +279,17 @@ if __name__ == "__main__":
             book_data["neighbours"] = neighbours[i]
 
             # Place it on the json file
-            json_file[book_id[i]] = book_data
+            book_json[book_id[i]] = book_data
 
             if i % 100 == 0:
                 print("%d / %d" % (i,len(books)))
 
-        print("Writing the output json file..")
+        #print("Writing the output json file..")
 
-        with open('data.json', 'w', encoding='utf-8') as outfile:
-            json.dump({"data":json_file}, outfile)
+        # Write book collecction
+
+        with open(str(len(books)) + '-data_books.json', 'w', encoding='utf-8') as outfile:
+            json.dump({"books":book_json}, outfile)
 
         print("** Time JSON : %.3f seconds" % (time.time() - t_json))
         
