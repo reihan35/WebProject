@@ -235,7 +235,7 @@ if __name__ == "__main__":
         word_json = dict()
 
         print("-- Record word :")
-        for j in range(len(word_list)):
+        for j in range(5):#(len(word_list)):
 
             if j % 10000 == 0 :
                 print("%d / %d" % (j , len(word_list) ))
@@ -243,11 +243,11 @@ if __name__ == "__main__":
             books_of_word = [book_id[i] for i in range(len(books)) if books_index[i][j] != 0]
             books_of_word.sort(key= lambda id : closeness[id], reverse=True)
 
-            word_json[word_list[j]] = books_of_word
+            word_json[word_list[j]] = {"book_list":books_of_word}
 
         #json_file["words"] = word_json    
         # Write words collection
-        with open(str(len(books)) + '-data_words-.json', 'w', encoding='utf-8') as outfile:
+        with open(str(len(books)) + '_data_words-.json', 'w', encoding='utf-8') as outfile:
             json.dump({"words":word_json}, outfile)
 
 
@@ -288,7 +288,7 @@ if __name__ == "__main__":
 
         # Write book collecction
 
-        with open(str(len(books)) + '-data_books.json', 'w', encoding='utf-8') as outfile:
+        with open(str(len(books)) + '_data_books.json', 'w', encoding='utf-8') as outfile:
             json.dump({"books":book_json}, outfile)
 
         print("** Time JSON : %.3f seconds" % (time.time() - t_json))
