@@ -235,7 +235,7 @@ if __name__ == "__main__":
         word_json = dict()
 
         print("-- Record word :")
-        for j in range(5):#(len(word_list)):
+        for j in range(len(word_list)):
 
             if j % 10000 == 0 :
                 print("%d / %d" % (j , len(word_list) ))
