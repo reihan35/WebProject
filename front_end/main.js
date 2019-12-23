@@ -92,7 +92,50 @@ var wait = 0;
 //Searchs for a special key in the DB and add results in the html file
 function searchDB(key){
   var db = firebase.firestore();
-  db.collection("data").where("words","array-contains",key)//.orderBy("clos_index")
+  docRef = db.collection("words").doc(key);
+  docRef.get().then(function(doc) {
+    if (doc.exists) {
+      var books = doc.data().book_list;
+      console.log("Document data:", books);
+      n = 0
+      for(x in books){
+        docRef2 = db.collection("books").doc(x);
+        docRef2.get().then(function(doc2) {
+          if (doc.exists) {
+            n = n + 1
+            var b = new Book();
+            b.title = doc2.data().title;
+            b.author = doc2.data().author;
+            b.date = doc2.data().release;
+            b.link = "http://www.gutenberg.org/cache/epub/"+ doc2.data().gut_num +"/pg"+ doc2.data().gut_num + ".txt"
+            $(".books-list").append(b.getHTML());
+            if (n<3){
+            var suggestions =  doc2.data().neighbours;
+              for (y in suggestions) {
+                s = db.collection("books").doc(y).get().then(function(doc3){
+                  $(".md-chips").append(
+                    "<div class=\"md-chip\">" +
+                    "<a href=\""+ b.link + "\">" + b.title + "</a>" +
+                  "</div>");
+                })
+              } 
+            }
+          }
+          
+          else{
+            console.log("No such document!");
+
+          }
+        })
+      }
+    } else {
+        // doc.data() will be undefined in this case
+        console.log("No such document!");
+    }
+  }).catch(function(error) {
+    console.log("Error getting document:", error);
+  });
+  /*db.collection("data").where("words","array-contains",key)//.orderBy("clos_index")
     .get()
     .then(function(querySnapshot) {
         querySnapshot.forEach(function(doc) {
@@ -120,7 +163,7 @@ function searchDB(key){
     })
     .catch(function(error) {
         console.log("Error getting documents: ", error);
-    });
+    });*/
 
 };
 
