@@ -235,19 +235,33 @@ if __name__ == "__main__":
         word_json = dict()
 
         print("-- Record word :")
-        for j in range(len(word_list)):
 
-            if j % 10000 == 0 :
-                print("%d / %d" % (j , len(word_list) ))
+        nw = 0
+        num_doc = 0
 
-            books_of_word = [book_id[i] for i in range(len(books)) if books_index[i][j] != 0]
-            books_of_word.sort(key= lambda id : closeness[id], reverse=True)
+        while nw < len(word_list):
 
-            word_json[word_list[j]] = {"book_list":books_of_word}
+            j=0
+            doc = "words" + str(num_doc)
+            word_json[doc] = dict()
+            while j < 20000 and nw < len(word_list):
+
+                if nw % 10000 == 0 :
+                    print("%d / %d" % (nw , len(word_list) ))
+
+                books_of_word = [book_id[i] for i in range(len(books)) if books_index[i][j] != 0]
+                books_of_word.sort(key= lambda id : closeness[id], reverse=True)
+
+                word_json[doc][word_list[nw]] = books_of_word
+
+                j += 1
+                nw += 1
+            
+            num_doc += 1
 
         #json_file["words"] = word_json    
         # Write words collection
-        with open(str(len(books)) + '_data_words-.json', 'w', encoding='utf-8') as outfile:
+        with open(str(len(books)) + '_data_words.json', 'w', encoding='utf-8') as outfile:
             json.dump({"words":word_json}, outfile)
 
 
