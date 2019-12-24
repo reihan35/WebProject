@@ -241,10 +241,10 @@ if __name__ == "__main__":
 
         while nw < len(word_list):
 
-            j=0
+            entries = 0
             doc = "words" + str(num_doc)
             word_json[doc] = dict()
-            while j < 20000 and nw < len(word_list):
+            while entries < 39000 and nw < len(word_list):
 
                 if nw % 10000 == 0 :
                     print("%d / %d" % (nw , len(word_list) ))
@@ -254,7 +254,7 @@ if __name__ == "__main__":
 
                 word_json[doc][word_list[nw]] = books_of_word
 
-                j += 1
+                entries += 2 + 2*len(books_of_word)
                 nw += 1
             
             num_doc += 1
