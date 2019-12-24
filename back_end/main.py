@@ -249,7 +249,7 @@ if __name__ == "__main__":
                 if nw % 10000 == 0 :
                     print("%d / %d" % (nw , len(word_list) ))
 
-                books_of_word = [book_id[i] for i in range(len(books)) if books_index[i][j] != 0]
+                books_of_word = [book_id[i] for i in range(len(books)) if books_index[i][nw] != 0]
                 books_of_word.sort(key= lambda id : closeness[id], reverse=True)
 
                 word_json[doc][word_list[nw]] = books_of_word
