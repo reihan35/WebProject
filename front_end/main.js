@@ -91,6 +91,16 @@ const header = "<div class=\"header\">" +
 var wait = 0;
 //Searchs for a special key in the DB and add results in the html file
 function searchDB(key){
+  /*var db = firebase.firestore();
+  docRef = db.collection("words").doc("words0").collection(key)
+  docRef.get().then(function(doc) {
+    if (doc.exists) {
+      console.log("Document data:", doc);
+    }
+    console.log("No such document!");
+
+  })*/
+  console.log(key);
   var db = firebase.firestore();
   docRef = db.collection("words").doc(key);
   docRef.get().then(function(doc) {
@@ -99,12 +109,14 @@ function searchDB(key){
       console.log("Document data:", books);
       n = 0
       for(x in books){
-        docRef2 = db.collection("books").doc(x);
+        //console.log(books[0])
+        docRef2 = db.collection("books").doc(""+books[x]);
         docRef2.get().then(function(doc2) {
           if (doc.exists) {
             n = n + 1
             var b = new Book();
             b.title = doc2.data().title;
+            console.log(doc2.data().title);
             b.author = doc2.data().author;
             b.date = doc2.data().release;
             b.link = "http://www.gutenberg.org/cache/epub/"+ doc2.data().gut_num +"/pg"+ doc2.data().gut_num + ".txt"
@@ -135,7 +147,8 @@ function searchDB(key){
   }).catch(function(error) {
     console.log("Error getting document:", error);
   });
-  /*db.collection("data").where("words","array-contains",key)//.orderBy("clos_index")
+  /*
+  db.collection("data").where("words","array-contains",key)//.orderBy("clos_index")
     .get()
     .then(function(querySnapshot) {
         querySnapshot.forEach(function(doc) {
@@ -163,15 +176,6 @@ function searchDB(key){
     })
     .catch(function(error) {
         console.log("Error getting documents: ", error);
-    });*/
-
+    });
+*/
 };
-
-
-$( "#s" ).keypress(function( event ) 
-{
-  if ( event.which == 13 ) {
-    document.getElementById("b").click();
-  }
-});
-

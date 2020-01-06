@@ -1,0 +1,53 @@
+@import url(https://fonts.googleapis.com/css?family=Jura);
+@import url(https://fonts.googleapis.com/css?family=Roboto);
+
+body {
+  background-color: white;
+  overflow-x: hidden;
+  font-family: "Roboto", sans-serif;
+  margin: 0;
+  box-sizing: border-box;
+}
+
+main {
+  text-align: center;
+}
+
+.search input {
+  /* margin-left: 480px; */
+  height: 3rem;
+  margin-top: 12px;
+  min-width: 24rem;
+  max-width: 48rem;
+  padding: 10px;
+  background: #ccc;
+  color: black;
+  font-size: 17px;
+  border: 1px;
+  border-left: none;
+  cursor: pointer;
+  border-bottom-left-radius: 30px;
+  border-top-left-radius: 30px;
+}
+
+.search input:focus {
+  outline: none;
+  /* Remove default outline and use border or box-shadow */
+}
+
+#ib2 {
+  height: 3rem;
+  width: 5%;
+  margin-left: -10px;
+  margin-top: 12px;
+  padding-bottom: 11.2px;
+  padding-top: 10px;
+  background: #ccc;
+  color: #000019;
+  font-size: 17px;
+  cursor: pointer;
+  border-bottom-right-radius: 30px;
+  border-top-right-radius: 30px;
+  border: none;
+  border-left: none;
+}
