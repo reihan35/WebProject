@@ -1,41 +1,48 @@
 <html>
-  <head>
-     <link rel="shortcut icon" href="book4.png" type="image/x-icon"/>
-     <meta charset="UTF-8">
-     <link rel="stylesheet" href="engine.css">
-     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-     <title>LS</title>
-     
-   </head>
-   <body>
-      <a>
-         <img src="book4.png">
-         <h2>Library Search</h2>
-      </a>
-      <form id ="s2" class="search">
-         <input id = "s" name="search" type="search" placeholder="Search here..." required>
-         <!-- <button id="b" onclick="searchBooksWhereKW()" type="button" value="submit">Search</button>-->
-         <button id="ib2" type="submit"  onclick="searchBooksWhereKW()" ><i class="fa fa-search"></i></button>
 
-      </form>
-      <div> 
-            <h4>Advanced search</h4>
-         <label class="switch">
-            <input id="cb1" type="checkbox">
-            <span class="slider round"></span>
-         </label>
-      </div>
-      <!-- The core Firebase JS SDK is always required and must be listed first -->
-      <script src="https://www.gstatic.com/firebasejs/7.5.0/firebase-app.js"></script>
+<head>
+  <link rel="shortcut icon" href="book4.png" type="image/x-icon" />
+  <meta charset="UTF-8">
+  <!-- <link rel="stylesheet" href="engine.css"> -->
+  <link rel="stylesheet" href="engine2.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+  <title>LS</title>
 
-      <!-- TODO: Add SDKs for Firebase products that you want to use
+</head>
+
+<body>
+  <main>
+
+    <div>
+      <img src="book4.png">
+      <h2>Library Search</h2>
+    </div>
+    <form id="s2" class="search">
+      <input id="s" name="search" type="search" placeholder="Search here..." required>
+      <!-- <button id="b" onclick="searchBooksWhereKW()" type="button" value="submit">Search</button>-->
+      <button id="ib2" type="submit" onclick="searchBooksWhereKW()"><i class="fa fa-search"></i></button>
+
+    </form>
+    <div>
+      <h4>Advanced search</h4>
+      <label class="switch">
+        <input id="cb1" type="checkbox">
+        <span class="slider round"></span>
+      </label>
+    </div>
+  </main>
+  <!-- The core Firebase JS SDK is always required and must be listed first -->
+  <script src="https://www.gstatic.com/firebasejs/7.5.0/firebase-app.js"></script>
+
+  <!-- TODO: Add SDKs for Firebase products that you want to use
       https://firebase.google.com/docs/web/setup#available-libraries -->
 
-      <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-      <script src="https://www.gstatic.com/firebasejs/7.5.0/firebase-firestore.js"></script>
-      <script src="https://www.gstatic.com/firebasejs/7.5.0/firebase-analytics.js"></script>
-      <script src="https://www.gstatic.com/firebasejs/7.5.0/firebase-database.js"></script>
-      <script src="main.js"></script>
-      
-   </body>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/7.5.0/firebase-firestore.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/7.5.0/firebase-analytics.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/7.5.0/firebase-database.js"></script>
+  <script src="main.js"></script>
+
+</body>
+
 </html>
