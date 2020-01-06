@@ -1,0 +1,63 @@
+<html>
+  <head>
+     <link rel="shortcut icon" href="search_logo.png" type="image/x-icon"/>
+     <meta charset="UTF-8">
+     <link rel="stylesheet" href="results.css">
+     <script src="https://kit.fontawesome.com/yourcode.js"></script>
+     <script src="RegEx.js"></script>    
+     <title>Results</title>
+   </head>
+   <body>
+
+        <div class="header">
+            <div class="header-wrapper"> 
+                <div class="logo">
+                    <img src="search_logo.png" alt="bird_logo"> 
+                </div>
+                <div class="search-zone">
+                        <form id ="s2" class="search" action="myFunction()">
+                                <input id = "s" name="search" type="search" placeholder="Search here..." required>     
+                                <button id = "button" onclick="searchBooksWhereKW()" type="button" value="submit"> <i class="fa fa-search"></i></button>
+                        </form>
+                </div>
+                <h3>Advanced Search</h3>
+                <label class="switch">
+                        <input type="checkbox">
+                        <span class="slider round"></span>
+                </label>
+            </div>  
+        </div>
+
+        <h4>Suggestions related to your keyword:</h4>
+                <div class="md-chip">
+                  Hello World
+                </div>
+
+        <div class="result">
+            <a href="http://www.gutenberg.org/files/71/71-0.txt"> On the Duty of Civil Disobedience</a>
+            <div>
+                http://www.gutenberg.org/files/71/71-0.txt
+            </di>
+            <div>
+                By Henry David Thoreau
+            </div>
+            <div>
+                Realese Date : 12 June 2004
+            </div>
+        </div>
+        <div class="result">
+            <a href="http://www.gutenberg.org/files/71/71-0.txt"> On the Duty of Civil Disobedience</a>
+            <div>
+                http://www.gutenberg.org/files/71/71-0.txt
+            </di>
+            <div>
+                By Henry David Thoreau
+            </div>
+            <div>
+                Realese Date : 12 June 2004
+            </div>
+        </div>
+        <i class="fa fa-band-aid"></i>
+
+    </body>
+</html>
