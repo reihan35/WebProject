@@ -38,7 +38,7 @@ let RegExTree = class {
         }
         else {
             let result = this.rootToString() +"(";
-            for (var i in this.subTrees) {
+            for (var i = 0; i < this.subTrees.length-1; +i++) {
                 result += this.subTrees[i].toString() + ",";
             }
             result += this.subTrees[this.subTrees.length-1].toString() + ")";
@@ -47,32 +47,26 @@ let RegExTree = class {
     }
 }
 
-function parse(regEx) {
-    let result = []
+function parse_regEx(regEx) {
+    var result = []
     for (var i in regEx) {
         result.push(new RegExTree(charToRoot(regEx[i]), []))
     }
+    return parse(result);
+}
 
-    var i = 0;
-    while (i<5 || containParenthese(result)){
-        console.log(i);
-        i+=1;
-        result=processParenthese(result);
-        console.log(i);
-        i+=1
-    }
-    //while (containEtoile(result)) result=processEtoile(result);
-    //while (containConcat(result)) result=processConcat(result);
-    //while (containAltern(result)) result=processAltern(result);
-    //if (result.size()>1) throw new Exception();
+function parse(result) {
 
-    console.log("test parseur :");
-    console.log(result)
-    for (i in result){
-        console.log(result[i].toString());
-    }
-    return result[0]
-    //return result 
+    while (containParenthese(result)) result=processParenthese(result);
+    while (containEtoile(result)) result=processEtoile(result);
+    while (containConcat(result)) result=processConcat(result);
+    while (containAltern(result)) result=processAltern(result);
+
+    if (result.length > 1) throw "Syntax erreur in parsing : more than one subtree in result";
+    if (result.length == 0) throw "Erreur parsing : result est vide"
+
+    return removeProtection(result[0])
+    
 }
 
 function containParenthese (trees) {
@@ -103,32 +97,149 @@ function processParenthese(trees) {
                     result.pop();
                 }
             }
-            console.log("done",done)
             if (!done) throw "Erreur parenthesage";
             found = true;
-            console.log("found if",found)
             let subTrees = [];
-            subTrees.push(parse(content));
+            subTrees.push(parse(content.reverse()));
             result.push(new RegExTree(PROTECTION, subTrees));
         }
         else {
             result.push(t)
         }
-        console.log("found end for",found)
     }
-    console.log(found);
+
     if (!found) throw "Erreur parenthesage";
     return result
 }
 
-test_tree = new RegExTree(CONCAT,['a','b']);
-console.log("test_tree :");
-console.log(test_tree.toString());
+function containEtoile (trees) {
+    for (i in trees) {
+        t = trees[i]
+        if (t.root == ETOILE && t.subTrees.length == 0) return true;
+    }
+    return false;
+}
 
-let regex = "(a|b)*c.def";
-let result_parse = parse(regex);
-console.log("Résultat parseur :")
-console.log(result_parse)
+function processEtoile (trees) {
+    let result = [];
+    var found = false;
+    for (i in trees) {
+        t = trees[i];
+        if (!found && t.root == ETOILE && t.subTrees.length == 0) {
+            if (result.length == 0) throw "Erreur syntaxe etoile";
+            found = true;
+            let last = result[result.length-1];
+            result.pop();
+            let subTrees = [];
+            subTrees.push(last);
+            result.push(new RegExTree(ETOILE, subTrees));
+        }
+        else {
+            result.push(t);
+        }
+    }
+    return result;
+}
+
+function containConcat (trees) {
+    var firstFound = false;
+    for (i in trees) {
+        t = trees[i];
+        if (!firstFound && t.root != ALTERN) {
+            firstFound = true;
+            continue;
+        }
+        if (firstFound) {
+            if (t.root != ALTERN) return true;
+            else firstFound = false;
+        }
+    }
+    return false;
+}
+
+function processConcat (trees) {
+    let result = [];
+    var found = false;
+    var firstFound = false;
+    for (i in trees) {
+        t = trees[i];
+        if(!found && !firstFound && t.root != ALTERN) {
+            firstFound = true;
+            result.push(t);
+            continue;
+        }
+        if (!found && firstFound && t.root == ALTERN) {
+            firstFound = false;
+            result.push(t);
+            continue;
+        }
+        if (!found && firstFound && t.root != ALTERN) {
+            found = true;
+            let last = result[result.length-1];
+            result.pop();
+            let subTrees = [];
+            subTrees.push(last);
+            subTrees.push(t);
+            result.push(new RegExTree(CONCAT,subTrees));
+        }
+        else {
+            result.push(t);
+        }
+    }
+    return result;
+}
+
+function containAltern (trees) {
+    for (i in trees) {
+        t = trees[i]
+        if (t.root == ALTERN && t.subTrees.length == 0) return true;
+    }
+    return false;
+}
+
+function processAltern (trees) {
+    let result = [];
+    var found = false;
+    var gauche = null;
+    var done = false;
+    for (i in trees) {
+        t = trees[i];
+        if (!found && t.root == ALTERN && t.subTrees.length == 0) {
+            if (result.length == 0) throw "Erreur syntaxe Altern";
+            found = true;
+            gauche = result[result.length-1];
+            result.pop();
+            continue;
+        }
+        if (found && !done) {
+            if (gauche == null) throw "Erreur syntaxe Altern";
+            done = true;
+            let subTrees = [];
+            subTrees.push(gauche);
+            subTrees.push(t);
+            result.push(new RegExTree(ALTERN, subTrees));
+        }
+        else {
+            result.push(t);
+        }
+    }
+    return result;
+}
+
+function removeProtection (tree) {
+    if (tree.root == PROTECTION && tree.subTrees.length != 1) {
+        throw "Erreur de syntaxe parenthesage";
+    }
+    if (tree.subTrees.length == 0) {
+        if (tree.root == DOT) tree.root = ".";
+        return tree;
+    }
+    if (tree.root == PROTECTION) return removeProtection(tree.subTrees[0]);
+
+    let subTrees = []
+    for (i in tree.subTrees) subTrees.push(removeProtection(tree.subTrees[i]));
+    return new RegExTree(tree.root, subTrees);
+}
 
 
-console.log("enf file RegEx");
+
