@@ -47,19 +47,42 @@ Book.prototype.getHTML =
 function searchBooksWhereKW() { 
   if ($('#cb2').is(':checked')){
     $("body .books-list").empty()
-    kw = document.getElementById("s").value;
-    searchDB(kw);
+     //On change la fonction avec la deuxime facon avec les regex
+     kw = document.getElementById("s").value;
+     let result_parse = parse_regEx(kw);
+     // size_max : taille max des mots calculés à partir de la regex
+     let size_max = 10
+     let words = words_from(result_parse,10);
+     for (var i in words) {
+       searchDB(words[i]);
+       console.log(words[i]);
+     }
+     console.log("Non non je suis la")
+     $("body").empty();
+     $("body").append(header);
+
   }
   else {
     if($('#cb1').is(':checked')){
       //On change la fonction avec la deuxime facon avec les regex
       kw = document.getElementById("s").value;
+      let result_parse = parse_regEx(kw);
+      // size_max : taille max des mots calculés à partir de la regex
+      let size_max = 10
+      let words = words_from(result_parse,10);
+      for (var i in words) {
+        searchDB(words[i]);
+        console.log(words[i]);
+      }
+      console.log("je suis la")
+      $("body").empty();
+      $("body").append(header);
+    }else{
+      kw = document.getElementById("s").value;
       searchDB(kw);
+      $("body").empty();
+      $("body").append(header);
     }
-    kw = document.getElementById("s").value;
-    searchDB(kw);
-    $("body").empty();
-    $("body").append(header);
   }
 
 };
@@ -87,6 +110,10 @@ const header = "<div class=\"header\">" +
               "<div class=\"md-chips\">" +
               "</div>"+
               "<div class=\"books-list\"></div>"
+
+
+
+
 
 var wait = 0;
 //Searchs for a special key in the DB and add results in the html file
