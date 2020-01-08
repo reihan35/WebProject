@@ -38,7 +38,7 @@ Book.prototype.getHTML =
               "<a href=\""+ this.link + "\">" + this.title + "</a>" +
               "<div>" + this.link + "</div>" + 
               "<div> By " + this.author + "</div>" +
-              "<div> Realese Date : " + this.date + "</div>" +
+              "<div> Realese Date : " + this.date + "</div>" 
               "</div>"
         return s;
     }
@@ -60,10 +60,10 @@ function searchBooksWhereKW() {
      console.log("Non non je suis la")
      $("body").empty();
      $("body").append(header);
-     $(".su2").append("<h3>words matched with your regex</h3>");
+     $(".su2").append("<h3>We are looking for these words matched with your regex</h3>");
      for (var i in words) {
-        $(".list").append("<li><a href=\"#\">" + words[i] +"</a></li>");
-       console.log(words[i]);
+      $(".list").append("<li><a href=\"#\" onclick=\"javascript: doItOnlyFor(\"" + words[i] + "\");\">" + words[i] +"</a></li>");
+      console.log(words[i]);
      }
 
   }
@@ -84,9 +84,47 @@ function searchBooksWhereKW() {
       $("body").append(header);
       $(".su2").append("<h4>words matched with your regex</h4>");
       for (var i in words) {
-         $(".list").append("<li><a href=\"#\">" + words[i] +"</a></li>");
-        console.log(words[i]);
+        //$(".list").append("<li><a href=\"#\" onclick=\"javascript: doItOnlyFor(\"" + words[i] + "\");\">" + words[i] +"</a></li>");
+        //$(".list").append("<li><a id =\"try\" href=\"#\" onclick=\"javascript: doItOnlyFor()\";>" + words[i] +"</a></li>");
+        $(".list").append("<li><a id =\""+i+"\" href=\"#\">" + words[i] +"</a></li>");
+        console.log("mais quoiiiiiiiiiiiiii" + i)
       }
+      $("#"+0).click(function(){
+        $(".books-list").empty();
+        searchDB(words[0]);
+      });
+      $("#"+1).click(function(){
+        $(".books-list").empty();
+        searchDB(words[1]);
+      });
+      $("#"+2).click(function(){
+        $(".books-list").empty();
+        searchDB(words[2]);
+      });
+      $("#"+3).click(function(){
+        $(".books-list").empty();
+        searchDB(words[3]);
+      });
+      $("#"+4).click(function(){
+        $(".books-list").empty();
+        searchDB(words[4]);
+      });
+      $("#"+5).click(function(){
+        $(".books-list").empty();
+        searchDB(words[5]);
+      });
+      $("#"+6).click(function(){
+        $(".books-list").empty();
+        searchDB(words[6]);
+      });
+      $("#"+7).click(function(){
+        $(".books-list").empty();
+        searchDB(words[7]);
+      });
+      $("#"+8).click(function(){
+        $(".books-list").empty();
+        searchDB(words[8]);
+      });
     }else{
       kw = document.getElementById("s").value;
       searchDB(kw);
@@ -95,6 +133,14 @@ function searchBooksWhereKW() {
     }
   }
 };
+
+
+
+/*function doItOnlyFor(kw){
+  console.log("voici le mot " + kw);
+  $(".books-list").empty();
+  searchDB(kw);
+}*/
 
 const header = "<div class=\"header\">" + 
                 "<div class=\"header-wrapper\">" + 
@@ -159,6 +205,8 @@ function searchDB(key){
             b.author = doc2.data().author;
             b.date = doc2.data().release;
             b.link = "http://www.gutenberg.org/cache/epub/"+ doc2.data().gut_num +"/pg"+ doc2.data().gut_num + ".txt"
+            
+            $(".books-list").append("<h6>contains word " + key + "</h6>");
             $(".books-list").append(b.getHTML());
            /* if (n<3){
             var suggestions =  doc2.data().neighbours;

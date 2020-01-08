@@ -228,7 +228,6 @@ h4{
 .su{
   font-family:'jura';
   font-weight: bold;
-  margin-top: 100px;
   margin-left: 90px;
 
 }
@@ -237,7 +236,7 @@ h4{
   font-family:'jura';
   font-weight: bold;
   margin-top: 100px;
-  margin-left: 73px;
+  margin-left:  90px;
 
 }
 
@@ -354,7 +353,7 @@ l {
 
 li {
   font: 200 20px/1.5 Helvetica, Verdana, sans-serif;
-  margin-left: 50px;
+  margin-left: 90px;
 }
 
 li:last-child {
