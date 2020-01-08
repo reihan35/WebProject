@@ -60,6 +60,11 @@ function searchBooksWhereKW() {
      console.log("Non non je suis la")
      $("body").empty();
      $("body").append(header);
+     $(".su2").append("<h3>words matched with your regex</h3>");
+     for (var i in words) {
+        $(".list").append("<li><a href=\"#\">" + words[i] +"</a></li>");
+       console.log(words[i]);
+     }
 
   }
   else {
@@ -77,6 +82,11 @@ function searchBooksWhereKW() {
       console.log("je suis la")
       $("body").empty();
       $("body").append(header);
+      $(".su2").append("<h4>words matched with your regex</h4>");
+      for (var i in words) {
+         $(".list").append("<li><a href=\"#\">" + words[i] +"</a></li>");
+        console.log(words[i]);
+      }
     }else{
       kw = document.getElementById("s").value;
       searchDB(kw);
@@ -84,7 +94,6 @@ function searchBooksWhereKW() {
       $("body").append(header);
     }
   }
-
 };
 
 const header = "<div class=\"header\">" + 
@@ -104,8 +113,11 @@ const header = "<div class=\"header\">" +
                           "<input id=\"cb2\" type=\"checkbox\">" +
                           "<span class=\"slider round\"></span>" +
                   "</label>" +
-                "</div>"+
+                "</div>" +
               "</div>" +
+              "<div class = \"su2\"></div>" +
+              "<ul class=\"list\">" +
+              "</ul>" + 
               "<div class = \"su\"> Suggestions related to your search </div>" +
               "<div class=\"md-chips\">" +
               "</div>"+
@@ -143,12 +155,12 @@ function searchDB(key){
             n = n + 1
             var b = new Book();
             b.title = doc2.data().title;
-            console.log(doc2.data().title);
+            //console.log(doc2.data().title);
             b.author = doc2.data().author;
             b.date = doc2.data().release;
             b.link = "http://www.gutenberg.org/cache/epub/"+ doc2.data().gut_num +"/pg"+ doc2.data().gut_num + ".txt"
             $(".books-list").append(b.getHTML());
-            if (n<3){
+           /* if (n<3){
             var suggestions =  doc2.data().neighbours;
               for (y in suggestions) {
                 s = db.collection("books").doc(y).get().then(function(doc3){
@@ -158,7 +170,7 @@ function searchDB(key){
                   "</div>");
                 })
               } 
-            }
+            }*/
           }
           
           else{
