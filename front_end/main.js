@@ -59,16 +59,12 @@ function searchBooksWhereKW() {
        docRef = db.collection("words").doc(words[i]);
        docRef.get().then(function(doc) {
          if (doc.exists) {
-           console.log(existing)
            console.log("j'existe" + words[i])
-           existing.push(words[i]);
-           console.log(existing)
            searchDB(words[i]);
            $(".list").append("<li><a id =\""+i+"\" href=\"#\">" + words[i] +"</a></li>");
          }      
        })}).call(this, i);
      }
-     console.log(existing)
      console.log("je suis la")
      $("body").empty();
      $("body").append(header);
@@ -87,13 +83,15 @@ function searchBooksWhereKW() {
         docRef = db.collection("words").doc(words[i]);
         docRef.get().then(function(doc) {
           if (doc.exists) {
-            console.log(existing)
             console.log("j'existe" + words[i])
-            existing.push(words[i]);
-            console.log(existing)
             searchDB(words[i]);
             $(".list").append("<li><a id =\""+i+"\" href=\"#\">" + words[i] +"</a></li>");
+            /*$( "#"+i ).click(function() {
+              $(".books-list").empty();
+              searchDB(words[i]);
+            });*/
           }      
+         
         })}).call(this, i);
       }
       $("body").empty();
@@ -108,14 +106,6 @@ function searchBooksWhereKW() {
     }
   }
 };
-
-
-
-/*function doItOnlyFor(kw){
-  console.log("voici le mot " + kw);
-  $(".books-list").empty();
-  searchDB(kw);
-}*/
 
 const header = "<div class=\"header\">" + 
                 "<div class=\"header-wrapper\">" + 
@@ -144,15 +134,10 @@ const header = "<div class=\"header\">" +
               "</div>"+
               "<div class=\"books-list\"></div>"
 
-
-
-
-
 var wait = 0;
 
 //Searchs for a special key in the DB and add results in the html file
 function searchDB(key){
-  Nodc = true;
   var res;
   console.log(key);
   var db = firebase.firestore();
@@ -189,21 +174,17 @@ function searchDB(key){
               } 
             }*/
             console.log("je viens jusquà la")
-            res=0;
           }
           else{
             console.log("No such document!");
-            res=1;
           }
         })
       }
     } else {
         // doc.data() will be undefined in this case
         console.log("No such document!");
-        res=1;
     }
   }).catch(function(error) {
     console.log("Error getting document:", error);
   });
-  return res;
 };
