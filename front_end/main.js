@@ -20,6 +20,7 @@ firebase.initializeApp(config);
 
 // Get the input field
 var input = document.getElementById("s");
+var Nodc;
 
 
 
@@ -45,26 +46,33 @@ Book.prototype.getHTML =
 
 //Gets the value given by the user in the search input
 function searchBooksWhereKW() { 
+  var db = firebase.firestore();
   if ($('#cb2').is(':checked')){
     $("body .books-list").empty()
      //On change la fonction avec la deuxime facon avec les regex
      kw = document.getElementById("s").value;
      let result_parse = parse_regEx(kw);
-     // size_max : taille max des mots calculés à partir de la regex
-     let size_max = 10
      let words = words_from(result_parse,10);
      for (var i in words) {
-       searchDB(words[i]);
-       console.log(words[i]);
+       (function(i){
+       console.log("je rentre " + words[i])
+       docRef = db.collection("words").doc(words[i]);
+       docRef.get().then(function(doc) {
+         if (doc.exists) {
+           console.log(existing)
+           console.log("j'existe" + words[i])
+           existing.push(words[i]);
+           console.log(existing)
+           searchDB(words[i]);
+           $(".list").append("<li><a id =\""+i+"\" href=\"#\">" + words[i] +"</a></li>");
+         }      
+       })}).call(this, i);
      }
-     console.log("Non non je suis la")
+     console.log(existing)
+     console.log("je suis la")
      $("body").empty();
      $("body").append(header);
-     $(".su2").append("<h3>We are looking for these words matched with your regex</h3>");
-     for (var i in words) {
-      $(".list").append("<li><a href=\"#\" onclick=\"javascript: doItOnlyFor(\"" + words[i] + "\");\">" + words[i] +"</a></li>");
-      console.log(words[i]);
-     }
+     $(".su2").append("<h4>words matched with your regex</h4>");
 
   }
   else {
@@ -72,59 +80,26 @@ function searchBooksWhereKW() {
       //On change la fonction avec la deuxime facon avec les regex
       kw = document.getElementById("s").value;
       let result_parse = parse_regEx(kw);
-      // size_max : taille max des mots calculés à partir de la regex
-      let size_max = 10
       let words = words_from(result_parse,10);
       for (var i in words) {
-        searchDB(words[i]);
-        console.log(words[i]);
+        (function(i){
+        console.log("je rentre " + words[i])
+        docRef = db.collection("words").doc(words[i]);
+        docRef.get().then(function(doc) {
+          if (doc.exists) {
+            console.log(existing)
+            console.log("j'existe" + words[i])
+            existing.push(words[i]);
+            console.log(existing)
+            searchDB(words[i]);
+            $(".list").append("<li><a id =\""+i+"\" href=\"#\">" + words[i] +"</a></li>");
+          }      
+        })}).call(this, i);
       }
-      console.log("je suis la")
       $("body").empty();
       $("body").append(header);
       $(".su2").append("<h4>words matched with your regex</h4>");
-      for (var i in words) {
-        //$(".list").append("<li><a href=\"#\" onclick=\"javascript: doItOnlyFor(\"" + words[i] + "\");\">" + words[i] +"</a></li>");
-        //$(".list").append("<li><a id =\"try\" href=\"#\" onclick=\"javascript: doItOnlyFor()\";>" + words[i] +"</a></li>");
-        $(".list").append("<li><a id =\""+i+"\" href=\"#\">" + words[i] +"</a></li>");
-        console.log("mais quoiiiiiiiiiiiiii" + i)
-      }
-      $("#"+0).click(function(){
-        $(".books-list").empty();
-        searchDB(words[0]);
-      });
-      $("#"+1).click(function(){
-        $(".books-list").empty();
-        searchDB(words[1]);
-      });
-      $("#"+2).click(function(){
-        $(".books-list").empty();
-        searchDB(words[2]);
-      });
-      $("#"+3).click(function(){
-        $(".books-list").empty();
-        searchDB(words[3]);
-      });
-      $("#"+4).click(function(){
-        $(".books-list").empty();
-        searchDB(words[4]);
-      });
-      $("#"+5).click(function(){
-        $(".books-list").empty();
-        searchDB(words[5]);
-      });
-      $("#"+6).click(function(){
-        $(".books-list").empty();
-        searchDB(words[6]);
-      });
-      $("#"+7).click(function(){
-        $(".books-list").empty();
-        searchDB(words[7]);
-      });
-      $("#"+8).click(function(){
-        $(".books-list").empty();
-        searchDB(words[8]);
-      });
+     
     }else{
       kw = document.getElementById("s").value;
       searchDB(kw);
@@ -174,17 +149,11 @@ const header = "<div class=\"header\">" +
 
 
 var wait = 0;
+
 //Searchs for a special key in the DB and add results in the html file
 function searchDB(key){
-  /*var db = firebase.firestore();
-  docRef = db.collection("words").doc("words0").collection(key)
-  docRef.get().then(function(doc) {
-    if (doc.exists) {
-      console.log("Document data:", doc);
-    }
-    console.log("No such document!");
-
-  })*/
+  Nodc = true;
+  var res;
   console.log(key);
   var db = firebase.firestore();
   docRef = db.collection("words").doc(key);
@@ -219,50 +188,22 @@ function searchDB(key){
                 })
               } 
             }*/
+            console.log("je viens jusquà la")
+            res=0;
           }
-          
           else{
             console.log("No such document!");
-
+            res=1;
           }
         })
       }
     } else {
         // doc.data() will be undefined in this case
         console.log("No such document!");
+        res=1;
     }
   }).catch(function(error) {
     console.log("Error getting document:", error);
   });
-  /*
-  db.collection("data").where("words","array-contains",key)//.orderBy("clos_index")
-    .get()
-    .then(function(querySnapshot) {
-        querySnapshot.forEach(function(doc) {
-            wait=wait + 1;
-            // doc.data() is never undefined for query doc snapshots
-            //console.log(doc.id, " => ", doc.data());
-            var b = new Book();
-            b.title = doc.data().title;
-            b.author = doc.data().author;
-            b.date = doc.data().release;
-            b.link = "http://www.gutenberg.org/cache/epub/"+ doc.id +"/pg"+ doc.id + ".txt"
-            $(".books-list").append(b.getHTML());
-            if(wait<3){
-              for (var i = 0; i < 3; i++) {
-                s = doc.data().neighbours[i]
-                console.log("JE COMPRENDS +++++++++++" + db.doc("data/"+s).title)
-
-                $(".md-chips").append(
-                  "<div class=\"md-chip\">" +
-                    doc.data().neighbours[i] + 
-                "</div>");
-              } 
-            }
-        });
-    })
-    .catch(function(error) {
-        console.log("Error getting documents: ", error);
-    });
-*/
+  return res;
 };
