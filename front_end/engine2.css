@@ -229,7 +229,19 @@ h4{
   font-family:'jura';
   font-weight: bold;
   margin-left: 90px;
+  cursor: pointer;
 
+}
+
+.matched {
+  cursor: pointer;
+}
+
+.Nothing {
+  font-family:'jura';
+  font-weight: bold;
+  text-align: center;
+  cursor: pointer;
 }
 
 .su2{

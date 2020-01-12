@@ -62,13 +62,14 @@ function searchBooksWhereKW() {
            console.log("j'existe" + words[i])
            searchDB(words[i]);
            $(".list").append("<li><a id =\""+i+"\" href=\"#\">" + words[i] +"</a></li>");
-         }      
+         }
+         $(".list").hide();
        })}).call(this, i);
      }
      console.log("je suis la")
      $("body").empty();
      $("body").append(header);
-     $(".su2").append("<h4>words matched with your regex</h4>");
+     $(".su2").append("<h4 class=matched> Click to see words matched with your regex</h4>");
 
   }
   else {
@@ -81,26 +82,33 @@ function searchBooksWhereKW() {
         (function(i){
         console.log("je rentre " + words[i])
         docRef = db.collection("words").doc(words[i]);
+        i = 0
         docRef.get().then(function(doc) {
           if (doc.exists) {
             console.log("j'existe" + words[i])
             searchDB(words[i]);
+            i++;
             $(".list").append("<li><a id =\""+i+"\" href=\"#\">" + words[i] +"</a></li>");
             /*$( "#"+i ).click(function() {
               $(".books-list").empty();
               searchDB(words[i]);
             });*/
-          }      
-         
+          }
+          if (i==0){
+            $(".su").hide();
+            $(".su2").hide();
+            $("body").append("<h4 class=Nothing >Your search " + kw + " did not match any documents.</h4>")
+          }    
+         $(".list").hide();
         })}).call(this, i);
       }
       $("body").empty();
       $("body").append(header);
-      $(".su2").append("<h4>words matched with your regex</h4>");
+      $(".su2").append("<h4 class=matched >Click to see words matched with your regex</h4>");
      
     }else{
       kw = document.getElementById("s").value;
-      searchDB(kw);
+      searchDB_NoRegex(kw);
       $("body").empty();
       $("body").append(header);
     }
@@ -129,12 +137,69 @@ const header = "<div class=\"header\">" +
               "<div class = \"su2\"></div>" +
               "<ul class=\"list\">" +
               "</ul>" + 
-              "<div class = \"su\"> Suggestions related to your search </div>" +
+              "<div class = \"su\">Click to see suggestions related to your search </div>" +
               "<div class=\"md-chips\">" +
               "</div>"+
               "<div class=\"books-list\"></div>"
 
 var wait = 0;
+
+function searchDB_NoRegex(key){
+  var res;
+  console.log(key);
+  var db = firebase.firestore();
+  docRef = db.collection("words").doc(key);
+  docRef.get().then(function(doc) {
+    if (doc.exists) {
+      var books = doc.data().book_list;
+      console.log("Document data:", books);
+      n = 0
+      for(x in books){
+        //console.log(books[0])
+        docRef2 = db.collection("books").doc(""+books[x]);
+        docRef2.get().then(function(doc2) {
+          if (doc.exists) {
+            n = n + 1
+            var b = new Book();
+            b.title = doc2.data().title;
+            //console.log(doc2.data().title);
+            b.author = doc2.data().author;
+            b.date = doc2.data().release;
+            b.link = "http://www.gutenberg.org/cache/epub/"+ doc2.data().gut_num +"/pg"+ doc2.data().gut_num + ".txt"
+            
+            $(".books-list").append(b.getHTML());
+            if (n<3){
+            var suggestions =  doc2.data().neighbours;
+              for (y in suggestions) {
+                s = db.collection("books").doc(suggestions[y]+"").get().then(function(doc3){
+                  if (!books.includes[suggestions[y]]){
+                    $(".md-chips").append(
+                      "<div class=\"md-chip\">" +
+                      "<a href=\""+ doc3.data().link + "\">" + doc3.data().title + "</a>" +
+                    "</div>");
+                  }
+                })
+              } 
+            }
+           
+          }
+          else{
+            console.log("No such document!");
+          }
+        })
+      }
+      $(".md-chips").hide();
+      console.log("je viens jusquà la" + $(".md-chips").is(":visible"))
+    } else {
+        // doc.data() will be undefined in this case
+        $(".su").hide();
+        $("body").append("<h4 class=Nothing >Your search " + kw + " did not match any documents.</h4>")
+        console.log("No such document!");
+    }
+  }).catch(function(error) {
+    console.log("Error getting document:", error);
+  });
+};
 
 //Searchs for a special key in the DB and add results in the html file
 function searchDB(key){
@@ -162,24 +227,28 @@ function searchDB(key){
             
             $(".books-list").append("<h6>contains word " + key + "</h6>");
             $(".books-list").append(b.getHTML());
-           /* if (n<3){
+            if (n<3){
             var suggestions =  doc2.data().neighbours;
               for (y in suggestions) {
-                s = db.collection("books").doc(y).get().then(function(doc3){
-                  $(".md-chips").append(
-                    "<div class=\"md-chip\">" +
-                    "<a href=\""+ b.link + "\">" + b.title + "</a>" +
-                  "</div>");
+                s = db.collection("books").doc(suggestions[y]+"").get().then(function(doc3){
+                  if (!books.includes[suggestions[y]]){
+                    $(".md-chips").append(
+                      "<div class=\"md-chip\">" +
+                      "<a href=\""+ doc3.data().link + "\">" + doc3.data().title + "</a>" +
+                    "</div>");
+                  }
                 })
               } 
-            }*/
-            console.log("je viens jusquà la")
+            }
+           
           }
           else{
             console.log("No such document!");
           }
         })
       }
+      $(".md-chips").hide();
+      console.log("je viens jusquà la" + $(".md-chips").is(":visible"))
     } else {
         // doc.data() will be undefined in this case
         console.log("No such document!");
@@ -188,3 +257,28 @@ function searchDB(key){
     console.log("Error getting document:", error);
   });
 };
+
+$(document).on('click', '.su', function() { 
+  console.log("je viens jusquà la" + $(".md-chips").is(":visible"))
+  if($(".md-chips").is(":visible")){ 
+    $(".md-chips").hide();
+  }else{
+    $(".md-chips").show();
+} });
+
+$(document).on('click', '.matched', function() { 
+  console.log("je viens jusquà la" + $(".list").is(":visible"))
+  if($(".list").is(":visible")){ 
+    $(".list").hide();
+  }else{
+    $(".list").show();
+} });
+
+/*$( ".su" ).click(function() {
+  console.log("je viens jusquà la" + $(".md-chips").is(":visible"))
+  if($(".md-chips").is(":visible")){ 
+    $(".md-chips").hide();
+  }else{
+    $(".md-chips").show();
+  }
+});*/
