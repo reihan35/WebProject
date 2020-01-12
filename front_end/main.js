@@ -66,10 +66,17 @@ function searchBooksWhereKW() {
          $(".list").hide();
        })}).call(this, i);
      }
+     
      console.log("je suis la")
      $("body").empty();
      $("body").append(header);
      $(".su2").append("<h4 class=matched> Click to see words matched with your regex</h4>");
+     if (j==0){
+      $("body").empty();
+      $("body").append(header);
+      $(".su").hide();
+      $("body").append("<h4 class=Nothing >Your RegEx " + kw + " did not match any documents.</h4>")
+    }  
 
   }
   else {
@@ -82,29 +89,31 @@ function searchBooksWhereKW() {
         (function(i){
         console.log("je rentre " + words[i])
         docRef = db.collection("words").doc(words[i]);
-        i = 0
+        var j = 0
         docRef.get().then(function(doc) {
           if (doc.exists) {
             console.log("j'existe" + words[i])
             searchDB(words[i]);
-            i++;
+            j++;
             $(".list").append("<li><a id =\""+i+"\" href=\"#\">" + words[i] +"</a></li>");
             /*$( "#"+i ).click(function() {
               $(".books-list").empty();
               searchDB(words[i]);
             });*/
-          }
-          if (i==0){
-            $(".su").hide();
-            $(".su2").hide();
-            $("body").append("<h4 class=Nothing >Your search " + kw + " did not match any documents.</h4>")
-          }    
-         $(".list").hide();
+          }  
+         //$(".list").hide();
         })}).call(this, i);
       }
       $("body").empty();
       $("body").append(header);
       $(".su2").append("<h4 class=matched >Click to see words matched with your regex</h4>");
+      console.log(j)
+      /*if (j==0){
+        $("body").empty();
+        $("body").append(header);
+        $(".su").hide();
+        $("body").append("<h4 class=Nothing >Your RegEx " + kw + " did not match any documents.</h4>")
+      }  */
      
     }else{
       kw = document.getElementById("s").value;
@@ -224,7 +233,6 @@ function searchDB(key){
             b.author = doc2.data().author;
             b.date = doc2.data().release;
             b.link = "http://www.gutenberg.org/cache/epub/"+ doc2.data().gut_num +"/pg"+ doc2.data().gut_num + ".txt"
-            
             $(".books-list").append("<h6>contains word " + key + "</h6>");
             $(".books-list").append(b.getHTML());
             if (n<3){
