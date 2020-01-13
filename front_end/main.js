@@ -101,13 +101,13 @@ function searchBooksWhereKW() {
               searchDB(words[i]);
             });*/
           }  
-         //$(".list").hide();
+         $(".list").hide();
         })}).call(this, i);
       }
       $("body").empty();
       $("body").append(header);
       $(".su2").append("<h4 class=matched >Click to see words matched with your regex</h4>");
-      console.log(j)
+      //console.log(j)
       /*if (j==0){
         $("body").empty();
         $("body").append(header);
@@ -151,7 +151,38 @@ const header = "<div class=\"header\">" +
               "</div>"+
               "<div class=\"books-list\"></div>"
 
-var wait = 0;
+/*function search2Words(key1,key2){
+  var db = firebase.firestore();
+  docRef = db.collection("words").doc(key1);
+  docRef2 = db.collection("words").doc(key2);
+  var books_set = new Set();
+  var books_set2 = new Set();
+  docRef.get().then(function(doc) {
+    if (doc.exists) {
+      var books = doc.data().book_list;
+      books_set = Set(books);
+      console.log(books_set);
+    } else {
+        books_set = Set();
+    }
+  }).catch(function(error) {
+    console.log("Error getting document:", error);
+  });
+  docRef.get().then(function(doc) {
+    if (doc.exists) {
+      var books2 = doc.data().book_list;
+      books_set2 = Set(books2);
+      console.log(books_set2);
+    } else {
+        books_set = Set();
+    }
+  }).catch(function(error) {
+    console.log("Error getting document:", error);
+  });
+  return books_set.intersection(books_set2);
+};
+
+console.log("j'essaye de voir ca" + search2Words("a","b")) */
 
 function searchDB_NoRegex(key){
   var res;
