@@ -155,8 +155,13 @@ const header = "<div class=\"header\">" +
 function order_books(kwlist){
   var db = firebase.firestore();
   var books_by_number_of_words = {};
+  var books_by_number_of_words_order = {};
   for(i = 0; i < 500; i++){
     books_by_number_of_words[i] = [];
+  }
+
+  for(p = 0; p <= kwlist.length; p++){
+   books_by_number_of_words_order[p] = [];
   }
   //console.log(books_by_number_of_words)
   for (var j in kwlist){
@@ -174,7 +179,42 @@ function order_books(kwlist){
       }
     }})}).call(this, j);
   }
-  console.log(books_by_number_of_words)
+  //console.log(books_by_number_of_words)
+  for (var n in books_by_number_of_words){
+    console.log("ahahaha" + books_by_number_of_words[n])
+    //(function(n){
+     // console.log("ahahaha" + books_by_number_of_words[n])
+      for (s=0;s<kwlist.length;s++) {
+        (function(s){
+          console.log("JE RENTRE")
+          console.log("s : " + s)
+          console.log("books_by_number_of_words[n].length :" + books_by_number_of_words[n].length)
+          if (books_by_number_of_words[n].length == s ){
+              (books_by_number_of_words_order[s]).push(books_by_number_of_words[n])
+          }
+        }).call(this, s);
+      }
+    //}).call(this, n);
+  }
+  /*console.log(books_by_number_of_words)
+  console.log(books_by_number_of_words[38])
+  for (s=0;s<kwlist.length;s++){
+    (function(s){
+      console.log(kwlist.length)
+      for (var n in books_by_number_of_words) {
+        (function(n){
+          console.log("n : " + n)
+          console.log("s : " + s)
+          console.log("books_by_number_of_words[n].length :" + books_by_number_of_words[38])
+          if ((books_by_number_of_words[n]).length == s ){
+              (books_by_number_of_words_order[s]).push(books_by_number_of_words[n])
+          }
+        }).call(this, n);
+      }
+    }).call(this, s);
+  }*/
+  console.log(books_by_number_of_words_order)
+
 }
 
 order_books(["hi","hello"])
