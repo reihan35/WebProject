@@ -59,6 +59,7 @@ if __name__ == "__main__":
     parser.add_argument("-j", "--no_jaccard", action="store_true")
     parser.add_argument("-c", "--no_centrality", action="store_true")
     parser.add_argument("-w", "--no_write_json", action="store_true")
+    parser.add_argument("-g", "--graph_analyze", action="store_true")
 
     args = parser.parse_args()
 
@@ -66,6 +67,7 @@ if __name__ == "__main__":
     do_jaccard = not args.no_jaccard
     do_centrality = do_jaccard & (not args.no_centrality)
     write_json = not args.no_write_json
+    graph_analyze = args.graph_analyze
 
     # Directory of the books
     book_dir = "book_test"
@@ -127,19 +129,15 @@ if __name__ == "__main__":
 
     print("** Time sum words : %.3f seconds" % (time.time() - t_nbwords))
 
+    def build_graph_with(seuil_jaccard):
+        # Compute jaccard distance
+        d_jaccard = []
 
-    # Compute jaccard distance
-    d_jaccard = []
+        if do_jaccard:
+            t_jac = time.time()
 
-    mode = 0
+            d_jaccard = [[0]*len(books) for _ in range(len(books))]
 
-    if do_jaccard:
-        t_jac = time.time()
-
-        d_jaccard = [[0]*len(books) for _ in range(len(books))]
-
-        if mode == 0:
-        
             for i in range(len(books)):
                 if i % 10 == 0:
                     print("Jaccard %d / %d" % (i, len(books)))
@@ -149,78 +147,113 @@ if __name__ == "__main__":
 
             print("** Time jaccard : %.3f seconds" % (time.time() - t_jac))
 
-        elif mode == 1:
-
-            t_multijac = time.time()
-
-            d_jaccard = [[0]*len(books) for _ in range(len(books))]
-
-            """for i in range (len(books), 4):
-                process1.append(i)
-                process2.append(i+1)
-                process3.append(i+2)
-                process4.append(i+3)
-                
-                puis lancer le calcul sur les 4 process seulement : un par coeur"""
-
-            processes = []
-            size_compute = [
-                0,
-                len(books)//2, 
-                len(books)//2 + len(books)//4, 
-                len(books)//2 + len(books)//4 + len(books)//8, 
-                len(books)//2 + len(books)//4 + len(books)//8 + len(books)//16,
-                len(books) - len(books)//2 - len(books)//4 - len(books)//8 - len(books)//16
-            ]
-            for i in range(1,6):
-                p = multiprocessing.Process(target=jac_part, args=(size_compute[i-1], size_compute[i]))
-                processes.append(p)
-                p.start()
-                
-            print(len(processes))
-
-            for process in processes:
-                process.join()
-
-            #print(d_jaccard)
-
-            print("** Time multiprocess Jaccard : %.3f seconds" % (time.time() - t_multijac))
-
-        elif mode == 2:
-            t_pool = time.time()
-            pool = multiprocessing.Pool()
-            pool.map(line_of_jac, range(len(books)))
-            pool.close()
-            #print(d_jaccard)
-            print("** Time pool Jaccard : %.3f seconds" % (time.time() - t_pool))
-
-    # Build graph & centrality index
-    G = nx.Graph()
-    closeness = {}
-    if do_centrality:
-        t_graph = time.time()
-        G = build_graph(d_jaccard, seuil_jaccard)
-        print("** Time build graph : %.3f seconds" % (time.time() - t_graph))
-        #nx.draw(G)
-        #show()
-
-        print("Computing centrality index ..")
-        t_centr = time.time()
-        closeness = nx.closeness_centrality(G)
-        print("** Time centrality : %.3f seconds" % (time.time() - t_centr))
     
+        # Build graph & centrality index
+        G = nx.Graph()
+        closeness = {}
+        if do_centrality:
+            t_graph = time.time()
+            G = build_graph(d_jaccard, seuil_jaccard)
+            print("** Time build graph : %.3f seconds" % (time.time() - t_graph))
+            #nx.draw(G)
+            #show()
 
-    # Get the neighbours
-    if do_jaccard:
-        time_neigh = time.time()
+            print("Computing centrality index ..")
+            t_centr = time.time()
+            closeness = nx.closeness_centrality(G)
+            print("** Time centrality : %.3f seconds" % (time.time() - t_centr))
 
-        neighbours = []
-        for i in range(len(books)):
-            ngh_i = [book_id[j] for j in range(len(books)) if d_jaccard[i][j] < seuil_jaccard]
-            ngh_i.sort(key=lambda i : closeness[i], reverse=True)
-            neighbours.append(ngh_i)
+        # Get the neighbours
+        if do_jaccard:
+            time_neigh = time.time()
 
-        print("** Time compute neighbours : %.3f seconds" % (time.time() - time_neigh))
+            neighbours = []
+            for i in range(len(books)):
+                ngh_i = [book_id[j] for j in range(len(books)) if i != j and d_jaccard[i][j] < seuil_jaccard]
+                ngh_i.sort(key=lambda i : closeness[i], reverse=True)
+                neighbours.append(ngh_i)
+
+            print("** Time compute neighbours : %.3f seconds" % (time.time() - time_neigh))
+
+        return G, closeness, neighbours
+
+    if not graph_analyze:
+        G, closeness, neighbours = build_graph_with(seuil_jaccard)
+
+    else:
+        
+        jacc_min = 0.5
+        jacc_max = 0.8
+        jacc_pas = 0.025
+
+        seuils_test = []
+        
+        s = jacc_min
+        while s <= jacc_max:
+            seuils_test.append(s)
+            s += jacc_pas
+
+        data_analyze = dict()
+
+        vkey = "Voisins"
+        cckey = "Composantes connexes"
+        clkey = "Cliques"
+
+        minkey = "min"
+        maxkey = "max"
+        moykey = "moyenne"
+        repkey = "repartition"
+
+        data_analyze[vkey] = dict()
+        data_analyze[cckey] = dict()
+        data_analyze[clkey] = dict()
+
+        for key in data_analyze.keys():
+            data_analyze[key][minkey] = []
+            data_analyze[key][maxkey] = []
+            data_analyze[key][moykey] = []
+            data_analyze[key][repkey] = []
+
+        for seuil in seuils_test:
+
+            G, closeness, neighbours = build_graph_with(seuil)
+
+            nb_neigh = [len(v) for v in neighbours]
+            cc_of_G = nx.connected_components(G)
+            size_cc = [len(cc) for cc in cc_of_G]
+            cliques = nx.find_cliques(G)
+            size_cliques = [len(c) for c in cliques]
+
+            for key in data_analyze.keys():
+                elts = []
+                if key == vkey:
+                    elts = nb_neigh
+                elif key == cckey:
+                    elts = size_cc
+                elif key == clkey:
+                    elts = size_cliques
+
+                data_analyze[key][minkey].append(min(elts))
+                data_analyze[key][maxkey].append(max(elts))
+                data_analyze[key][moykey].append( sum(elts) / len(elts) )
+
+                rep = [0] * (len(books)+1)
+                for n in elts:
+                    try:
+                        rep[n] += 1
+                    except:
+                        print("\n\n Erreur")
+                        print("len books : %d" % (len(books)))
+                        print("n : %d" %n)
+
+                data_analyze[key][repkey].append(rep)
+            
+                
+        data_analyze["Seuils"] = seuils_test
+        with open(str(len(books)) + '_analyze_graph.json', 'w', encoding='utf-8') as outfile:
+            json.dump({"data":data_analyze}, outfile)
+
+        exit()
 
     # Write the json data
     
@@ -232,19 +265,20 @@ if __name__ == "__main__":
 
         print("Build json data :")
 
-        word_json = dict()
-
         print("-- Record word :")
 
+        file_limit = 50000
+        
         nw = 0
-        num_doc = 0
-
+        doc = 10
         while nw < len(word_list):
 
-            entries = 0
-            doc = "words" + str(num_doc)
-            word_json[doc] = dict()
-            while entries < 39000 and nw < len(word_list):
+            word_json = dict()
+            words_in_file = 0
+
+            while words_in_file < file_limit and nw < len(word_list):
+
+                word_json["words"] = dict()
 
                 if nw % 10000 == 0 :
                     print("%d / %d" % (nw , len(word_list) ))
@@ -252,17 +286,18 @@ if __name__ == "__main__":
                 books_of_word = [book_id[i] for i in range(len(books)) if books_index[i][nw] != 0]
                 books_of_word.sort(key= lambda id : closeness[id], reverse=True)
 
-                word_json[doc][word_list[nw]] = books_of_word
+                word_json["words"][word_list[nw]] = books_of_word
 
-                entries += 2 + 2*len(books_of_word)
                 nw += 1
+                words_in_file += 1
             
-            num_doc += 1
-
-        #json_file["words"] = word_json    
-        # Write words collection
-        with open(str(len(books)) + '_data_words.json', 'w', encoding='utf-8') as outfile:
-            json.dump({"words":word_json}, outfile)
+            doc += 1
+            
+            # Write words collection
+            with open(str(len(books)) + '_data_words_' + str(doc) + '.json', 'w', encoding='utf-8') as outfile:
+                json.dump({"words":word_json}, outfile)
+            
+            
 
 
         print("Record books :")
@@ -290,7 +325,9 @@ if __name__ == "__main__":
                 book_data["clos_index"] = closeness[i]
 
             # Record the neighbours of the book
-            book_data["neighbours"] = neighbours[i]
+
+            # On ne garde que les 3 voisins les plus pertinents
+            book_data["neighbours"] = neighbours[i][:3]
 
             # Place it on the json file
             book_json[book_id[i]] = book_data
