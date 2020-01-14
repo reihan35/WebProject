@@ -155,13 +155,13 @@ const header = "<div class=\"header\">" +
 async function order_books(kwlist){
   var db = firebase.firestore();
   var books_by_number_of_words = [];
-  var books_by_number_of_words_order = {};
+  var books_by_number_of_words_order = [];
   for(i = 0; i < 500; i++){
     books_by_number_of_words.push([]);
   }
 
   for(p = 0; p <= kwlist.length; p++){
-   books_by_number_of_words_order[p] = [];
+   books_by_number_of_words_order.push([]);
   }
   for (var j in kwlist){
     docRef = db.collection("words").doc(kwlist[j]);
