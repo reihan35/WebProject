@@ -152,69 +152,40 @@ const header = "<div class=\"header\">" +
               "<div class=\"books-list\"></div>"
 
 
-function order_books(kwlist){
+async function order_books(kwlist){
   var db = firebase.firestore();
-  var books_by_number_of_words = {};
+  var books_by_number_of_words = [];
   var books_by_number_of_words_order = {};
   for(i = 0; i < 500; i++){
-    books_by_number_of_words[i] = [];
+    books_by_number_of_words.push([]);
   }
 
   for(p = 0; p <= kwlist.length; p++){
    books_by_number_of_words_order[p] = [];
   }
-  //console.log(books_by_number_of_words)
   for (var j in kwlist){
-    (function(j){
     docRef = db.collection("words").doc(kwlist[j]);
-    docRef.get().then(function(doc) {
-    if (doc.exists) {
-      console.log("je rentre")
-      var books = doc.data().book_list;
-      for (var l in books) {
-        (function(l){
-          console.log("JE SUIS J " + kwlist[j]);
-          (books_by_number_of_words[books[l]]).push(kwlist[j])
-        }).call(this, l);
+    let books = await docRef.get().then(function(doc) {
+      if (doc.exists) {
+        return doc.data().book_list
       }
-    }})}).call(this, j);
+    })
+    for (var l in books) {
+        (books_by_number_of_words[books[l]]).push(kwlist[j])
+    }
+    console.log("BOOKS of " + kwlist[j]);
+    console.log(books)
   }
-  //console.log(books_by_number_of_words)
+  
   for (var n in books_by_number_of_words){
-    console.log("ahahaha" + books_by_number_of_words[n])
-    //(function(n){
-     // console.log("ahahaha" + books_by_number_of_words[n])
-      for (s=0;s<kwlist.length;s++) {
-        (function(s){
-          console.log("JE RENTRE")
-          console.log("s : " + s)
-          console.log("books_by_number_of_words[n].length :" + books_by_number_of_words[n].length)
+      for (s=0;s<=kwlist.length;s++) {
           if (books_by_number_of_words[n].length == s ){
-              (books_by_number_of_words_order[s]).push(books_by_number_of_words[n])
+              (books_by_number_of_words_order[s]).push(n)
           }
-        }).call(this, s);
       }
-    //}).call(this, n);
   }
-  /*console.log(books_by_number_of_words)
-  console.log(books_by_number_of_words[38])
-  for (s=0;s<kwlist.length;s++){
-    (function(s){
-      console.log(kwlist.length)
-      for (var n in books_by_number_of_words) {
-        (function(n){
-          console.log("n : " + n)
-          console.log("s : " + s)
-          console.log("books_by_number_of_words[n].length :" + books_by_number_of_words[38])
-          if ((books_by_number_of_words[n]).length == s ){
-              (books_by_number_of_words_order[s]).push(books_by_number_of_words[n])
-          }
-        }).call(this, n);
-      }
-    }).call(this, s);
-  }*/
+  console.log("RESULTAT ORDER_BOOKS:")
   console.log(books_by_number_of_words_order)
-
 }
 
 order_books(["hi","hello"])
