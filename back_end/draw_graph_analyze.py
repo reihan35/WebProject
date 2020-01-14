@@ -36,7 +36,7 @@ clkey = "Cliques"
 seuilkey = "Seuils"
 keys = [vkey, cckey, clkey]
 seuils = data[seuilkey]
-seuils_str = ["0."+str(round(1000*js)) for js in seuils]
+seuils_str = ["0."+str(round(100*js)) for js in seuils]
 
 keylabel = dict()
 keylabel[vkey] = "Nombre de voisins"
@@ -58,6 +58,7 @@ for key in keys:
     plt.xlabel("Seuil de Jaccard")
     plt.ylabel(keylabel[key])
     fig.savefig(savedir_name + "/aaa_" + key + ".png", dpi=fig.dpi)
+    plt.close(fig)
 
     print(key + " min max moy généré")
     
@@ -67,26 +68,43 @@ def dernier_non_nul(list):
         if list[i] != 0:
             return i
 
+# Retirer les composantes connexes qui n'ont qu'un seul noeud
+one_node_cc = []
+for i in range(len(data[cckey][repkey])):
+    one_node_cc.append(data[cckey][repkey][i][1])
+    data[cckey][repkey][i][1] = 0
+
 for key in keys:
+
     max_dernier_non_nul = -1
     for rep in data[key][repkey]:
         max_dernier_non_nul = max(max_dernier_non_nul, dernier_non_nul(rep))
-    for i in range(len(data[key][repkey])):
-        data[key][repkey][i] = data[key][repkey][i][:(max_dernier_non_nul+1)]
+    if key != cckey:
+        for i in range(len(data[key][repkey])):
+            data[key][repkey][i] = data[key][repkey][i][:(max_dernier_non_nul+1)]
     maxy = 0
     for rep in data[key][repkey]:
         maxy = max(maxy, max(rep))
     for i in range(len(seuils)):
+
         js = seuils[i]
         js_str = seuils_str[i]
         fig = plt.figure()
+        plt.ylim(0,maxy)
+        if key == cckey:
+            plt.bar([x for x in range(len(data[key][repkey][i]))], data[key][repkey][i], width=3)
+        else:
+            plt.bar([x for x in range(len(data[key][repkey][i]))], data[key][repkey][i])
         if key != cckey:
-            plt.ylim(0,maxy)
-        plt.bar([x for x in range(len(data[key][repkey][i]))], data[key][repkey][i])
-        plt.title(key + "\nSeuil jaccard = " + js_str)
+            plt.title(key + "\nSeuil jaccard = " + js_str)
+        else:
+            plt.title(key + " - Seuil jaccard = " + js_str + "\nNombre de CC de taille 1 : " + str(one_node_cc[i]))
         plt.xlabel(keylabel[key])
         plt.ylabel("Quantité")
         fig.savefig(savedir_name + "/" + key + "_" + js_str + ".png", dpi=fig.dpi)
+
+
         plt.close(fig)
+
 
     print(key + " répartition généré")
