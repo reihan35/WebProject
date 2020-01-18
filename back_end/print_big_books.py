@@ -3,7 +3,7 @@ import book_functions as bf
 
 if __name__ == "__main__":
 
-    books_path = "book_test"
+    books_path = "books"
     max = None
 
     books = bf.import_books(books_path, max)

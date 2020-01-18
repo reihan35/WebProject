@@ -11,7 +11,7 @@ import multiprocessing
 # Project files
 import book_functions as bf
 
-seuil_jaccard = 0.7
+seuil_jaccard = 0.48
 
 
 def d_jaccard_of(i,j, book_index):
@@ -70,7 +70,7 @@ if __name__ == "__main__":
     graph_analyze = args.graph_analyze
 
     # Directory of the books
-    book_dir = "book_test"
+    book_dir = "books"
     
     book_filename = bf.import_books(book_dir, max=nb_book_max)
     book_id = list(range(len(book_filename))) 
@@ -182,9 +182,9 @@ if __name__ == "__main__":
 
     else:
         
-        jacc_min = 0.5
-        jacc_max = 0.8
-        jacc_pas = 0.025
+        jacc_min = 0.1
+        jacc_max = 0.9
+        jacc_pas = 0.1
 
         seuils_test = []
         
@@ -250,7 +250,7 @@ if __name__ == "__main__":
             
                 
         data_analyze["Seuils"] = seuils_test
-        with open(str(len(books)) + '_analyze_graph.json', 'w', encoding='utf-8') as outfile:
+        with open(str(len(books)) + '_analyze_graph_large.json', 'w', encoding='utf-8') as outfile:
             json.dump({"data":data_analyze}, outfile)
 
         exit()
