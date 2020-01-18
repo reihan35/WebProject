@@ -182,9 +182,9 @@ if __name__ == "__main__":
 
     else:
         
-        jacc_min = 0.4
-        jacc_max = 0.6
-        jacc_pas = 0.01
+        jacc_min = 0.1
+        jacc_max = 0.9
+        jacc_pas = 0.1
 
         seuils_test = []
         
@@ -250,7 +250,7 @@ if __name__ == "__main__":
             
                 
         data_analyze["Seuils"] = seuils_test
-        with open(str(len(books)) + '_analyze_graph.json', 'w', encoding='utf-8') as outfile:
+        with open(str(len(books)) + '_analyze_graph_large.json', 'w', encoding='utf-8') as outfile:
             json.dump({"data":data_analyze}, outfile)
 
         exit()
