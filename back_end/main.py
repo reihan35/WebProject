@@ -6,6 +6,7 @@ import numpy as np
 import numpy.ma as ma
 import matplotlib.pyplot as plt
 import multiprocessing
+import os
 
 
 # Project files
@@ -76,7 +77,6 @@ if __name__ == "__main__":
     if args.seuil_jaccard != None:
         seuil_jaccard = args.seuil_jaccard
 
-
     # Directory of the books
     book_dir = "books"
     
@@ -88,6 +88,18 @@ if __name__ == "__main__":
     t_binfo = time.time()
     books_info = [bf.get_info_of(b) for b in books]
     print("** Time get book infos : %.3f seconds" % (time.time() - t_binfo))
+
+    # Dossier images graphe
+    dir_record_graph = str(len(books)) + "_Graphs"
+    if record_graph:
+        erase_dir = False
+        if dir_record_graph in os.listdir():
+            erase_dir = True
+        if erase_dir:
+            os.system("rm -rd " + dir_record_graph)
+
+        os.mkdir(dir_record_graph)
+
 
     # Get all the words
 
@@ -165,12 +177,12 @@ if __name__ == "__main__":
             print("** Time build graph : %.3f seconds" % (time.time() - t_graph))
             if record_graph:
                 fig = plt.figure()
-                nx.draw_networkx(G, with_labels=False)
-                plt.title(str(len(books)) + " livres\n Seuil de jaccard : " + str(seuil_jaccard))
+                nx.draw_networkx(G, with_labels=False, node_size=10)
+                plt.title(str(len(books)) + " livres\n Seuil de jaccard : 0." + str(int(1000 * seuil_jaccard)))
                 plt.axis("off")
-                fig.savefig(str(len(books)) + "_" + str(seuil_jaccard) + ".png", dpi=fig.dpi)
+                fig.savefig(dir_record_graph + "/" + str(len(books)) + "_0." + str(int(1000 * seuil_jaccard)) + ".png", dpi=fig.dpi)
                 plt.close(fig)
-                exit()
+                return None, None, None
 
             print("Computing centrality index ..")
             t_centr = time.time()
@@ -191,14 +203,14 @@ if __name__ == "__main__":
 
         return G, closeness, neighbours
 
-    if not graph_analyze:
+    if not graph_analyze and not record_graph:
         G, closeness, neighbours = build_graph_with(seuil_jaccard)
 
     else:
         
-        jacc_min = 0.1
-        jacc_max = 0.9
-        jacc_pas = 0.1
+        jacc_min = 0.5
+        jacc_max = 0.6
+        jacc_pas = 0.01
 
         seuils_test = []
         
@@ -230,7 +242,12 @@ if __name__ == "__main__":
 
         for seuil in seuils_test:
 
+            print("SEUIL")
+            print(seuil)
+
             G, closeness, neighbours = build_graph_with(seuil)
+
+            print("ICI")
 
             if record_graph:
                 continue
