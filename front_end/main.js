@@ -37,8 +37,10 @@ function Book(title, author, link,date,words){
 Book.prototype.getHTML =
     function(recherche_avancee){
         s =  "<div class=\"result\">"+
-              "<a href=\""+ this.link + "\">" + this.title + "</a>" +
-              "<div>" + this.link + "</div>" + 
+	     "<div >" + this.link + "</div>" + 
+	     "<div class=link>" +
+	     "<a href=\"#\" onclick='window.open(\" "+ this.link +"\");return false;'>"+ this.title +"</a>" + 
+ 	     "</div>" + 
               "<div> By " + this.author + "</div>" +
               "<div> Realese Date : " + this.date + "</div>" +
               "</div>"
