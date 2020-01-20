@@ -4,14 +4,14 @@ import json
 import networkx as nx
 import numpy as np
 import numpy.ma as ma
-from matplotlib.pyplot import show # to show the graph
+import matplotlib.pyplot as plt
 import multiprocessing
 
 
 # Project files
 import book_functions as bf
 
-seuil_jaccard = 0.48
+seuil_jaccard_default = 0.48
 
 
 def d_jaccard_of(i,j, book_index):
@@ -60,6 +60,8 @@ if __name__ == "__main__":
     parser.add_argument("-c", "--no_centrality", action="store_true")
     parser.add_argument("-w", "--no_write_json", action="store_true")
     parser.add_argument("-g", "--graph_analyze", action="store_true")
+    parser.add_argument("-r", "--record_graph", action="store_true")
+    parser.add_argument("-s", "--seuil_jaccard", type=float)
 
     args = parser.parse_args()
 
@@ -68,6 +70,12 @@ if __name__ == "__main__":
     do_centrality = do_jaccard & (not args.no_centrality)
     write_json = not args.no_write_json
     graph_analyze = args.graph_analyze
+    record_graph = args.record_graph
+
+    seuil_jaccard = seuil_jaccard_default
+    if args.seuil_jaccard != None:
+        seuil_jaccard = args.seuil_jaccard
+
 
     # Directory of the books
     book_dir = "books"
@@ -155,8 +163,14 @@ if __name__ == "__main__":
             t_graph = time.time()
             G = build_graph(d_jaccard, seuil_jaccard)
             print("** Time build graph : %.3f seconds" % (time.time() - t_graph))
-            #nx.draw(G)
-            #show()
+            if record_graph:
+                fig = plt.figure()
+                nx.draw_networkx(G, with_labels=False)
+                plt.title(str(len(books)) + " livres\n Seuil de jaccard : " + str(seuil_jaccard))
+                plt.axis("off")
+                fig.savefig(str(len(books)) + "_" + str(seuil_jaccard) + ".png", dpi=fig.dpi)
+                plt.close(fig)
+                exit()
 
             print("Computing centrality index ..")
             t_centr = time.time()
@@ -217,6 +231,9 @@ if __name__ == "__main__":
         for seuil in seuils_test:
 
             G, closeness, neighbours = build_graph_with(seuil)
+
+            if record_graph:
+                continue
 
             nb_neigh = [len(v) for v in neighbours]
             cc_of_G = nx.connected_components(G)

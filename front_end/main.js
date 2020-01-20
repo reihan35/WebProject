@@ -35,19 +35,21 @@ function Book(title, author, link,date,words){
 }
 
 Book.prototype.getHTML =
-    function(){
+    function(recherche_avancee){
         s =  "<div class=\"result\">"+
               "<a href=\""+ this.link + "\">" + this.title + "</a>" +
               "<div>" + this.link + "</div>" + 
               "<div> By " + this.author + "</div>" +
               "<div> Realese Date : " + this.date + "</div>" +
               "</div>"
+              if (recherche_avancee){
                 s = s + "<div> Contains : "
                 for (var d in this.words){
                   //console.log("!!!!!!!!!!!!!" + this.words[d])
-                  s = s + " " + this.words[d]
+                  s = s + " " + this.words[d] 
                 }
                 s = s + "</div>"
+              }
               
         return s;
     }
@@ -230,7 +232,7 @@ async function order_books(kwlist){
         //console.log(books_by_number_of_words_order[i][f][1])
         console.log("BON BAH JSP" + i + " " + f + " " + b.words)
         b.link = "http://www.gutenberg.org/cache/epub/"+ book.gut_num +"/pg"+ book.gut_num + ".txt"
-        $(".books-list").append(b.getHTML());
+        $(".books-list").append(b.getHTML(true));
         }
     }
   }
@@ -298,7 +300,7 @@ function searchDB_NoRegex(key){
             b.date = doc2.data().release;
             b.link = "http://www.gutenberg.org/cache/epub/"+ doc2.data().gut_num +"/pg"+ doc2.data().gut_num + ".txt"
             
-            $(".books-list").append(b.getHTML());
+            $(".books-list").append(b.getHTML(false));
             if (n<3){
             var suggestions =  doc2.data().neighbours;
               for (y in suggestions) {
@@ -355,6 +357,7 @@ function searchDB(key){
             b.author = doc2.data().author;
             b.date = doc2.data().release;
             b.link = "http://www.gutenberg.org/cache/epub/"+ doc2.data().gut_num +"/pg"+ doc2.data().gut_num + ".txt"
+            b.words = [key]
             $(".books-list").append("<h6>contains word " + key + "</h6>");
             $(".books-list").append(b.getHTML());
             if (n<3){
