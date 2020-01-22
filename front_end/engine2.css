@@ -13,6 +13,13 @@ main {
   text-align: center;
 }
 
+.link {
+
+  font-weight: bold;
+
+
+}
+
 .search input {
   /* margin-left: 480px; */
   height: 3rem;

@@ -25,22 +25,34 @@ var Nodc;
 
 
 //Creation of Book Object which will be used to add html
-function Book(title, author, link,date){
+function Book(title, author, link,date,words){
   this.title = title;
   this.author = author;
   this.link = link;
   //this.centrality = centrality;
   this.date = date;
+  this.words = words;
 }
 
 Book.prototype.getHTML =
-    function(){
+    function(recherche_avancee){
         s =  "<div class=\"result\">"+
-              "<a href=\""+ this.link + "\">" + this.title + "</a>" +
-              "<div>" + this.link + "</div>" + 
+	     "<div >" + this.link + "</div>" + 
+	     "<div class=link>" +
+	     "<a href=\"#\" onclick='window.open(\" "+ this.link +"\");return false;'>"+ this.title +"</a>" + 
+ 	     "</div>" + 
               "<div> By " + this.author + "</div>" +
-              "<div> Realese Date : " + this.date + "</div>" 
+              "<div> Realese Date : " + this.date + "</div>" +
               "</div>"
+              if (recherche_avancee){
+                s = s + "<div> Contains : "
+                for (var d in this.words){
+                  //console.log("!!!!!!!!!!!!!" + this.words[d])
+                  s = s + " " + this.words[d] 
+                }
+                s = s + "</div>"
+              }
+              
         return s;
     }
 
@@ -54,18 +66,18 @@ function searchBooksWhereKW() {
      let result_parse = parse_regEx(kw);
      let words = words_from(result_parse,10);
      for (var i in words) {
-       (function(i){
-       console.log("je rentre " + words[i])
-       docRef = db.collection("words").doc(words[i]);
-       docRef.get().then(function(doc) {
-         if (doc.exists) {
-           console.log("j'existe" + words[i])
-           searchDB(words[i]);
-           $(".list").append("<li><a id =\""+i+"\" href=\"#\">" + words[i] +"</a></li>");
-         }
-         $(".list").hide();
-       })}).call(this, i);
-     }
+      (function(i){
+      docRef = db.collection("words").doc(words[i]);
+      docRef.get().then(function(doc) {
+        if (doc.exists) {
+          $(".list").append("<li><a id =\""+i+"\" href=\"#\">" + words[i] +"</a></li>");
+        }
+        $(".list").hide();
+      })}).call(this, i);
+    }
+    
+    order_books(words);
+     
      
      console.log("je suis la")
      $("body").empty();
@@ -87,6 +99,17 @@ function searchBooksWhereKW() {
       let words = words_from(result_parse,10);
       for (var i in words) {
         (function(i){
+        docRef = db.collection("words").doc(words[i]);
+        docRef.get().then(function(doc) {
+          if (doc.exists) {
+            $(".list").append("<li><a id =\""+i+"\" href=\"#\">" + words[i] +"</a></li>");
+          }
+          $(".list").hide();
+        })}).call(this, i);
+      }
+      order_books(words);
+      /*for (var i in words) {
+        (function(i){
         console.log("je rentre " + words[i])
         docRef = db.collection("words").doc(words[i]);
         var j = 0
@@ -99,11 +122,11 @@ function searchBooksWhereKW() {
             /*$( "#"+i ).click(function() {
               $(".books-list").empty();
               searchDB(words[i]);
-            });*/
-          }  
+            });
+          }
          $(".list").hide();
         })}).call(this, i);
-      }
+      }*/
       $("body").empty();
       $("body").append(header);
       $(".su2").append("<h4 class=matched >Click to see words matched with your regex</h4>");
@@ -153,6 +176,7 @@ const header = "<div class=\"header\">" +
 
 
 async function order_books(kwlist){
+  console.log("LA LISTE DE MOT CLES" + kwlist)
   var db = firebase.firestore();
   var books_by_number_of_words = [];
   var books_by_number_of_words_order = [];
@@ -181,17 +205,82 @@ async function order_books(kwlist){
   }
   
   for (var n in books_by_number_of_words){
-      for (s=0;s<=kwlist.length;s++) {
+      for (s=1;s<=kwlist.length;s++) {
           if (books_by_number_of_words[n].length == s ){
-              (books_by_number_of_words_order[s]).push(n)
+              (books_by_number_of_words_order[kwlist.length - s + 1]).push([n,books_by_number_of_words[n]])
           }
       }
   }
-  console.log("RESULTAT ORDER_BOOKS:")
   console.log(books_by_number_of_words_order)
-}
+  console.log("JE RENTRE LA DEDANS MAIS JE NE COMPRENDS RIEN")
+  //return books_by_number_of_words_order
+  for(i = 0; i < books_by_number_of_words_order.length  ;i++){
+   // console.log("JE RENTRE LA DEDANS MAIS JE NE COMPRENDS RIEN")
+    for(var f in books_by_number_of_words_order[i]){
+      //console.log(books_by_number_of_words_order[i][f])
+      var key = books_by_number_of_words_order[i][f][0]
+      var words1 = books_by_number_of_words_order[i][f][1]
+     // console.log(words1)
+      docRef = db.collection("books").doc(key);
+      console.log("MAIS QUOI " + i + " " + f )
+      let book = await docRef.get().then(function(doc) {
+        if (doc.exists) {
+          return doc.data()
+        }
+      })
+        var b = new Book();
+        b.title = book.title;
+        b.author = book.author;
+        b.date = book.release;
+        b.words = words1;
+        console.log("ET LAAAAAAA" + words1);
+        //console.log(books_by_number_of_words_order[i][f][1])
+        console.log("BON BAH JSP" + i + " " + f + " " + b.words)
+        b.link = "http://www.gutenberg.org/cache/epub/"+ book.gut_num +"/pg"+ book.gut_num + ".txt"
+        $(".books-list").append(b.getHTML(true));
+        }
+    }
+  }
+     /* var key = books_by_number_of_words_order[i][f][0]
+      var words1 = books_by_number_of_words_order[i][f][1]
+      docRef = db.collection("books").doc(key);
+      docRef.get().then(function(doc) {
+          if (doc.exists) {
+            var b = new Book();
+            b.title = doc.data().title;
+            b.author = doc.data().author;
+            b.date = doc.data().release;
+            //b.words = words1;
+            //console.log("BON BAH JSP" + b.words)
+            b.link = "http://www.gutenberg.org/cache/epub/"+ doc.data().gut_num +"/pg"+ doc.data().gut_num + ".txt"
+            $(".books-list").append(b.getHTML());
 
-order_books(["hi","hello"])
+            /*if (n<3){
+            var suggestions =  doc2.data().neighbours;
+              for (y in suggestions) {
+                s = db.collection("books").doc(suggestions[y]+"").get().then(function(doc3){
+                  if (!books.includes[suggestions[y]]){
+                    $(".md-chips").append(
+                      "<div class=\"md-chip\">" +
+                      "<a href=\""+ doc3.data().link + "\">" + doc3.data().title + "</a>" +
+                    "</div>");
+                  }
+                })
+              } 
+            }
+           
+          }
+          else{
+            $(".md-chips").hide();
+            console.log("No such document!");
+          }
+        })
+      }
+
+  }
+console.log("RESULTAT ORDER_BOOKS:")
+console.log(books_by_number_of_words_order)
+}*/
 
 function searchDB_NoRegex(key){
   var res;
@@ -216,7 +305,7 @@ function searchDB_NoRegex(key){
             b.date = doc2.data().release;
             b.link = "http://www.gutenberg.org/cache/epub/"+ doc2.data().gut_num +"/pg"+ doc2.data().gut_num + ".txt"
             
-            $(".books-list").append(b.getHTML());
+            $(".books-list").append(b.getHTML(false));
             if (n<3){
             var suggestions =  doc2.data().neighbours;
               for (y in suggestions) {
@@ -273,6 +362,7 @@ function searchDB(key){
             b.author = doc2.data().author;
             b.date = doc2.data().release;
             b.link = "http://www.gutenberg.org/cache/epub/"+ doc2.data().gut_num +"/pg"+ doc2.data().gut_num + ".txt"
+            b.words = [key]
             $(".books-list").append("<h6>contains word " + key + "</h6>");
             $(".books-list").append(b.getHTML());
             if (n<3){
@@ -321,12 +411,3 @@ $(document).on('click', '.matched', function() {
   }else{
     $(".list").show();
 } });
-
-/*$( ".su" ).click(function() {
-  console.log("je viens jusquà la" + $(".md-chips").is(":visible"))
-  if($(".md-chips").is(":visible")){ 
-    $(".md-chips").hide();
-  }else{
-    $(".md-chips").show();
-  }
-});*/
