@@ -165,11 +165,14 @@ async function order_books(kwlist){
   }
   for (var j in kwlist){
     docRef = db.collection("words").doc(kwlist[j]);
-    let books = await docRef.get().then(function(doc) {
+    var books = await docRef.get().then(function(doc) {
       if (doc.exists) {
-        return doc.data().book_list
+        return doc.data()
       }
     })
+    console.log("BOOKS")
+    console.log(books)
+    books = books.book_list
     for (var l in books) {
         (books_by_number_of_words[books[l]]).push(kwlist[j])
     }
