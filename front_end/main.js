@@ -193,6 +193,9 @@ async function order_books(kwlist){
       if (doc.exists) {
         return doc.data()
       }
+      else {
+        return []
+      }
     })
     console.log("BOOKS")
     console.log(books)
