@@ -12,7 +12,7 @@ import os
 # Project files
 import book_functions as bf
 
-seuil_jaccard_default = 0.48
+seuil_jaccard_default = 0.51
 
 
 def d_jaccard_of(i,j, book_index):
@@ -138,7 +138,7 @@ if __name__ == "__main__":
             books_index[i][ind_of_word[w]] = occ
 
     print("** Time fill books : %.3f seconds" % (time.time() - t_fill))
-    
+
 
     # Number of words in each books
 
@@ -293,6 +293,15 @@ if __name__ == "__main__":
     
     if write_json:
 
+        # Write words
+        with open(str(len(books)) + '_wordlist.json', 'w', encoding='utf-8') as outfile:
+            words = []
+            for nw in range(len(word_list)):
+                books_of_word = [book_id[i] for i in range(len(books)) if books_index[i][nw] != 0]
+                words.append((word_list[nw],len(books_of_word)))
+            words.sort(key=lambda x : x[1]/len(x[0]))
+            json.dump({"wordlist":[w[0] for w in words]}, outfile)
+
         t_json = time.time()
 
         #json_file = {}
@@ -304,7 +313,7 @@ if __name__ == "__main__":
         file_limit = 50000
         
         nw = 0
-        doc = 10
+        doc = 0
         while nw < len(word_list):
 
             word_json = dict()

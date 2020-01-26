@@ -21,7 +21,7 @@ def group_words_of(path):
     text = ' '.join(f.readlines())
 
     # Remove everything which is not a letter by a space
-    text = re.sub(r'[^a-zA-Z ]+', ' ', text)
+    text = re.sub(r'[^a-zA-Zçéàèùâêîôûë ]+', ' ', text)
 
     sorted_words = sorted(word \
                     for word in text.lower().split())

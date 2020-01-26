@@ -1,17 +1,6 @@
 let functions = firebase.functions()
 
-//Creation of Book Object which will be used to add html
-/*function Book(title, author, link,date,words){
-  this.title = title;
-  this.author = author;
-  this.link = link;
-  //this.centrality = centrality;
-  this.date = date;
-  this.words = words;*/
-//}
-
-//Book.prototype.getHTML =
-function getHTML(b,recherche_avancee){
+function getHTML(b,recherche_avancee, words=[]){
     s =  "<div class=\"result\">"+
     "<div >" + b.link + "</div>" + 
     "<div class=link>" +
@@ -23,13 +12,13 @@ function getHTML(b,recherche_avancee){
           if (recherche_avancee){
             var first = true
             s = s + "<div> Contains : "
-            for (var d in b.words){
+            for (var d in words){
               if (first) {
                 first = false
-                s = s + " " + b.words[d] 
+                s = s + " " + words[d] 
               }
               else {
-                s = s + ", " + b.words[d] 
+                s = s + ", " + words[d] 
               }
             }
             s = s + "</div>"
@@ -66,137 +55,215 @@ const header = "<div class=\"header\">" +
           "<div class=\"books-list\"></div>"
 
 
-//Gets the value given by the user in the search input
-function searchBooksWhereKW() { 
-  console.log("ENTREE searchBooksWhereKW")
-  var db = firebase.firestore();
-  if ($('#cb2').is(':checked')){
-    console.log("IF 1")
-    /*$("body .books-list").empty()
-     //On change la fonction avec la deuxime facon avec les regex
-     kw = document.getElementById("s").value;
-     let result_parse = parse_regEx(kw);
-     let words = words_from(result_parse,10);
-     for (var i in words) {
-      (function(i){
-      docRef = db.collection("words").doc(words[i]);
-      docRef.get().then(function(doc) {
-        if (doc.exists) {
-          $(".list").append("<li><a id =\""+i+"\" href=\"#\">" + words[i] +"</a></li>");
-        }
-        $(".list").hide();
-      })}).call(this, i);
-    }
-    
-    order_books(words);
-     
-     
-     $("body").empty();
-     $("body").append(header);
-     $(".su2").append("<h4 class=matched> Click to see words matched with your regex</h4>");
-     if (j==0){
-      $("body").empty();
-      $("body").append(header);
-      $(".su").hide();
-      $("body").append("<h4 class=Nothing >Your RegEx " + kw + " did not match any documents.</h4>")
-    }  
-*/
-  }
-  else {
-    console.log("ELSE 1")
-    if($('#cb1').is(':checked')){
-      console.log("IF 2")
-      /*
-      //On change la fonction avec la deuxime facon avec les regex
-      kw = document.getElementById("s").value;
-      let result_parse = parse_regEx(kw);
-      let words = words_from(result_parse,10);
-      for (var i in words) {
-        (function(i){
-        docRef = db.collection("words").doc(words[i]);
-        docRef.get().then(function(doc) {
-          if (doc.exists) {
-            $(".list").append("<li><a id =\""+i+"\" href=\"#\">" + words[i] +"</a></li>");
-          }
-          $(".list").hide();
-        })}).call(this, i);
+function search_no_regex(kw) {
+  // Recherche sur kw n'est pas un regex
+
+  const url_search = 
+  "https://us-central1-testdaar-ac65e.cloudfunctions.net/searchDB_NoRegex/" + kw
+
+  fetch (url_search)
+    .then(data => data.json())
+    .then(res => {
+      let books_kw = res.book_list
+
+      console.log("Livres recherche de " + kw + " :")
+      console.log(books_kw)
+
+      if (books_kw.length == 0) {
+        $(".su").hide();
+        $("body").append("<h4 class=Nothing >Your search " + kw + " did not match any documents.</h4>")
       }
-      order_books(words);
-      
-      $("body").empty();
-      $("body").append(header);
-      $(".su2").append("<h4 class=matched >Click to see words matched with your regex</h4>");
-     */
-    }
-    else{
 
-      kw = document.getElementById("s").value;
+      else {
 
-      // searchDB_NoRegex (kw)
-      const url_search = 
-      "https://us-central1-testdaar-ac65e.cloudfunctions.net/searchDB_NoRegex/" + kw
+        // Remplissage du résultat de la recherche
+        for (var i in books_kw) {
+          const url_b = "https://us-central1-testdaar-ac65e.cloudfunctions.net/data_book_research/" + books_kw[i]
+          fetch (url_b)
+            .then(data => data.json())
+            .then(res => {
+              $(".books-list").append(getHTML(res, false))
+            })
+        }
 
-      fetch (url_search)
-        .then(data => data.json())
-        .then(res => {
-          let books_kw = res.book_list
+        // En parallèle, calcul des suggestions
+        const url_sugg = "https://us-central1-testdaar-ac65e.cloudfunctions.net/suggestionDB_NoRegex/" + kw
+        
+        fetch (url_sugg)
+          .then(data => data.json())
+          .then(res => {
+            let sugg_kw = res.suggestions
 
-          console.log("Livres recherche de " + kw + " :")
-          console.log(books_kw)
+            console.log("Livres de la suggestion :")
+            console.log(sugg_kw)
 
-          if (books_kw.length == 0) {
-            $(".su").hide();
-            $("body").append("<h4 class=Nothing >Your search " + kw + " did not match any documents.</h4>")
-          }
-
-          else {
-
-            // Remplissage du résultat de la recherche
-            for (var i in books_kw) {
-              const url_b = "https://us-central1-testdaar-ac65e.cloudfunctions.net/data_book_research/" + books_kw[i]
+            for (var i in sugg_kw) {
+              // Remplissage des résultats
+              const url_b = "https://us-central1-testdaar-ac65e.cloudfunctions.net/data_book_research/" + sugg_kw[i]
               fetch (url_b)
                 .then(data => data.json())
                 .then(res => {
-                  $(".books-list").append(getHTML(res, false))
+                  $(".md-chips").append(
+                    "<div class=\"md-chip\">" +
+                    "<a href=\""+ res.link + "\">" + res.title + "</a>" +
+                  "</div>")
                 })
             }
+          })
 
-            // En parallèle, calcul des suggestions
-            const url_sugg = "https://us-central1-testdaar-ac65e.cloudfunctions.net/suggestionDB_NoRegex/" + kw
-            
-            fetch (url_sugg)
+        $(".md-chips").hide();
+      }
+        
+    })
+  
+  $("body").empty();
+  $("body").append(header);
+}
+
+function search_regex(kw) {
+  // Recherche si kw est un regex
+      
+  const url_books_from_regex = "https://us-central1-testdaar-ac65e.cloudfunctions.net/books_from_regex/" + kw 
+    
+  fetch(url_books_from_regex)
+    .then(data => data.json())
+    .then(res => {
+      let words_matched = res.words_matched
+      let books_by_number_of_words_order = res.ordered_books
+
+      console.log("Mots qui matchent " + kw + " :")
+      console.log(words_matched)
+      console.log("Livres triés :")
+      console.log(books_by_number_of_words_order)
+
+      for (var i in words_matched) {
+        word = words_matched[i]
+          $(".list").append("<li><a id =\""+i+"\" href=\"#\">" + word +"</a></li>");
+          $(".list").hide();
+      }
+
+      for(i = 0; i < books_by_number_of_words_order.length  ;i++){
+
+        for(var f in books_by_number_of_words_order[i]){
+          const key = books_by_number_of_words_order[i][f][0]
+          const words1 = books_by_number_of_words_order[i][f][1]
+          const url_b = "https://us-central1-testdaar-ac65e.cloudfunctions.net/data_book_research/" + key
+          fetch (url_b)
               .then(data => data.json())
               .then(res => {
-                let sugg_kw = res.suggestions
+                $(".books-list").append(getHTML(res, true, words1))
 
-                console.log("Livres de la suggestion :")
-                console.log(sugg_kw)
-
-                for (var i in sugg_kw) {
-                  // Remplissage des résultats
-                  const url_b = "https://us-central1-testdaar-ac65e.cloudfunctions.net/data_book_research/" + sugg_kw[i]
-                  fetch (url_b)
-                    .then(data => data.json())
-                    .then(res => {
-                      $(".md-chips").append(
-                        "<div class=\"md-chip\">" +
-                        "<a href=\""+ res.link + "\">" + res.title + "</a>" +
-                      "</div>")
-                    })
-                }
               })
-
-            $(".md-chips").hide();
           }
-            
-        })
+
+      }
+    })
+    
+    // En parallèle, relancer un calcul pour avoir les suggestions :
+    const url_suggestions_from_regex = "https://us-central1-testdaar-ac65e.cloudfunctions.net/suggestions_from_regex/" + kw
+  
+    fetch(url_suggestions_from_regex)
+      .then(data => data.json())
+      .then(res => {
+        let suggestions = res.suggestions
+
+        console.log("Livres de la suggestion :")
+        console.log(suggestions)
+
+        for (var i in suggestions) {
+          // Remplissage des résultats
+          const url_b = "https://us-central1-testdaar-ac65e.cloudfunctions.net/data_book_research/" + suggestions[i]
+          fetch (url_b)
+            .then(data => data.json())
+            .then(res => {
+              $(".md-chips").append(
+                "<div class=\"md-chip\">" +
+                "<a href=\""+ res.link + "\">" + res.title + "</a>" +
+              "</div>")
+              
+            })
+
+        }
+        $(".md-chips").hide();
+      })
       
-      $("body").empty();
-      $("body").append(header);
+
+    $("body").empty();
+    $("body").append(header);
+    $(".su2").append("<h4 class=matched> Click to see words matched with your regex</h4>");
+    /*if (j==0){
+    $("body").empty();
+    $("body").append(header);
+    $(".su").hide();
+    $("body").append("<h4 class=Nothing >Your RegEx " + kw + " did not match any documents.</h4>")
+  }  */
+} 
+
+
+
+//Gets the value given by the user in the search input
+function searchBooksWhereKW() { 
+  var db = firebase.firestore();
+  if ($('#cb1').is(':checked') || $('#cb2').is(':checked')){
+    $("body .books-list").empty()
+    //On change la fonction avec la deuxime facon avec les regex
+    var kw = document.getElementById("s").value;
+
+    // Passage en minuscules
+    kw = kw.toLowerCase()
+    
+    // Enlève les espaces
+    kw = kw.replace(/\s/g, '')
+    
+    console.log("IS REGEX : " + kw)
+    search_regex(kw)
+
+  }
+  else {
+    
+    // S'il y a plusieurs mots => regex
+
+    var kw = document.getElementById("s").value;
+
+    // Passage en minuscules
+    kw = kw.toLowerCase()
+
+    // Enlever les caractères spéciaux
+    kw = kw.replace(/[^a-zA-Zçéàèùâêîôûë]/gi, ' ')
+
+    // Isoler les mots
+    kw = kw.trim();
+    kw = kw.split(" ");
+
+    console.log(kw)
+
+    if (kw.length > 1) {
+      // Il y a plusieurs mots => recherche regex
+      var regex = ""
+      var first = true
+      for (var i in kw) {
+        if (first) {
+          first = false
+          regex = regex + kw[i]
+        }
+        else {
+          regex = regex + "|" + kw[i]
+          
+        }
+      }
+  
+      console.log("IS REGEX : " + regex)
+      search_regex(regex)
+    }
+    else {
+      // Il y a qu'un seul mot => recherche normale
+      console.log("IS NOT REGEX : " + kw[0])
+      search_no_regex(kw[0])
+    }
 
     }
   }
-};
+
 
 
 
