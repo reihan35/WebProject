@@ -52,6 +52,7 @@ const header = "<div class=\"header\">" +
           "<div class = \"su\">Click to see suggestions related to your search </div>" +
           "<div class=\"md-chips\">" +
           "</div>"+
+          "<div class=\"lds-roller\"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>"+
           "<div class=\"books-list\"></div>"
 
 
@@ -61,9 +62,15 @@ function search_no_regex(kw) {
   const url_search = 
   "https://us-central1-testdaar-ac65e.cloudfunctions.net/searchDB_NoRegex/" + kw
 
+  $(".lds-roller").show();
+  $(".su").hide();
+
   fetch (url_search)
     .then(data => data.json())
     .then(res => {
+      $(".lds-roller").hide();
+      $(".su").show();
+
       let books_kw = res.book_list
 
       console.log("Livres recherche de " + kw + " :")
