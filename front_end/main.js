@@ -49,21 +49,22 @@ const header = "<div class=\"header\">" +
           "<div class = \"su2\"></div>" +
           "<ul class=\"list\">" +
           "</ul>" + 
-          "<div class = \"su\">Click to see suggestions related to your search </div>" +
+          "<div class = \"su\" style=\"visibility= hidden;\">Click to see suggestions related to your search </div>" +
           "<div class=\"md-chips\">" +
           "</div>"+
           "<div class=\"lds-roller\"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>"+
           "<div class=\"books-list\"></div>"
 
 
+
 function search_no_regex(kw) {
   // Recherche sur kw n'est pas un regex
+
 
   const url_search = 
   "https://us-central1-testdaar-ac65e.cloudfunctions.net/searchDB_NoRegex/" + kw
 
-  $(".lds-roller").show();
-  $(".su").hide();
+  //$(".lds-roller").show();
 
   fetch (url_search)
     .then(data => data.json())
@@ -135,6 +136,7 @@ function search_regex(kw) {
   fetch(url_books_from_regex)
     .then(data => data.json())
     .then(res => {
+      $(".lds-roller").hide();
       let words_matched = res.words_matched
       let books_by_number_of_words_order = res.ordered_books
 
