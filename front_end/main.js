@@ -69,7 +69,7 @@ function search_no_regex(kw) {
   fetch (url_search)
     .then(data => data.json())
     .then(res => {
-      $(".lds-roller").hide();
+      //$(".lds-roller").hide();
       $(".su").show();
 
       let books_kw = res.book_list
@@ -93,6 +93,8 @@ function search_no_regex(kw) {
               $(".books-list").append(getHTML(res, false))
             })
         }
+        $(".lds-roller").hide();
+
 
         // En parallèle, calcul des suggestions
         const url_sugg = "https://us-central1-testdaar-ac65e.cloudfunctions.net/suggestionDB_NoRegex/" + kw
@@ -123,7 +125,7 @@ function search_no_regex(kw) {
       }
         
     })
-  
+
   $("body").empty();
   $("body").append(header);
 }
@@ -136,7 +138,7 @@ function search_regex(kw) {
   fetch(url_books_from_regex)
     .then(data => data.json())
     .then(res => {
-      $(".lds-roller").hide();
+      //$(".lds-roller").hide();
       let words_matched = res.words_matched
       let books_by_number_of_words_order = res.ordered_books
 
@@ -164,10 +166,14 @@ function search_regex(kw) {
 
               })
           }
+          $(".lds-roller").hide();
+
 
       }
     })
     
+    $(".lds-roller").hide();
+
     // En parallèle, relancer un calcul pour avoir les suggestions :
     const url_suggestions_from_regex = "https://us-central1-testdaar-ac65e.cloudfunctions.net/suggestions_from_regex/" + kw
   
