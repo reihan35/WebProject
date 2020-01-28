@@ -89,10 +89,11 @@ function search_no_regex(kw) {
           fetch (url_b)
             .then(data => data.json())
             .then(res => {
+              $(".lds-roller").hide();
+
               $(".books-list").append(getHTML(res, false))
             })
         }
-        $(".lds-roller").hide();
 
 
         // En parallèle, calcul des suggestions
@@ -160,17 +161,16 @@ function search_regex(kw) {
           fetch (url_b)
               .then(data => data.json())
               .then(res => {
+                $(".lds-roller").hide();
+
                 $(".books-list").append(getHTML(res, true, words1))
 
               })
           }
-          $(".lds-roller").hide();
-
 
       }
     })
     
-    $(".lds-roller").hide();
 
     // En parallèle, relancer un calcul pour avoir les suggestions :
     const url_suggestions_from_regex = "https://us-central1-testdaar-ac65e.cloudfunctions.net/suggestions_from_regex/" + kw
@@ -189,6 +189,7 @@ function search_regex(kw) {
           fetch (url_b)
             .then(data => data.json())
             .then(res => {
+             
               $(".md-chips").append(
                 "<div class=\"md-chip\">" +
                 "<a href=\""+ res.link + "\">" + res.title + "</a>" +
@@ -215,7 +216,7 @@ function search_regex(kw) {
 
 
 //Gets the value given by the user in the search input
-function searchBooksWhereKW() { 
+function searchBooksWhereKW() {
   var db = firebase.firestore();
   if ($('#cb1').is(':checked') || $('#cb2').is(':checked')){
     $("body .books-list").empty()
@@ -223,10 +224,6 @@ function searchBooksWhereKW() {
     var kw = document.getElementById("s").value;
     
     if (kw.length == 0){
-      return
-    }
-
-    if (kw.length == 1 && kw[0]==""){
       return
     }
     
