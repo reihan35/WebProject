@@ -49,7 +49,13 @@ const header = "<div class=\"header\">" +
           "<div class = \"su2\"></div>" +
           "<ul class=\"list\">" +
           "</ul>" + 
-          "<div class = \"su\" style=\"visibility= hidden;\">Click to see suggestions related to your search </div>" +
+          "<div class = \"su\" style=\"visibility= hidden;\">" +
+          "Click to see suggestions related to your search" +
+          "<div class=\"tooltip\"> " +
+            "<a id=\"help\" href=\"#\">?</a> " +
+         " <span class=\"tooltiptext\">Suggestions here are books close to the top three books matching your key word. They do not contain your keyword but may interest you because of their closeness to the most important results of your search </span>" +
+          "</div>" +      
+          "</div>" +
           "<div class=\"md-chips\">" +
           "</div>"+
           "<div class=\"lds-roller\"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>"+
