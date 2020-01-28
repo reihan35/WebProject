@@ -64,12 +64,10 @@ function search_no_regex(kw) {
   const url_search = 
   "https://us-central1-testdaar-ac65e.cloudfunctions.net/searchDB_NoRegex/" + kw
 
-  //$(".lds-roller").show();
 
   fetch (url_search)
     .then(data => data.json())
     .then(res => {
-      //$(".lds-roller").hide();
       $(".su").show();
 
       let books_kw = res.book_list
@@ -98,7 +96,6 @@ function search_no_regex(kw) {
 
         // En parallèle, calcul des suggestions
         const url_sugg = "https://us-central1-testdaar-ac65e.cloudfunctions.net/suggestionDB_NoRegex/" + kw
-        
         fetch (url_sugg)
           .then(data => data.json())
           .then(res => {
