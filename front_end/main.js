@@ -76,6 +76,7 @@ function search_no_regex(kw) {
       console.log(books_kw)
 
       if (books_kw.length == 0) {
+        $(".lds-roller").hide();
         $(".su").hide();
         $("body").append("<h4 class=Nothing >Your search " + kw + " did not match any documents.</h4>")
       }
@@ -220,23 +221,37 @@ function searchBooksWhereKW() {
     $("body .books-list").empty()
     //On change la fonction avec la deuxime facon avec les regex
     var kw = document.getElementById("s").value;
+    
+    if (kw.length == 0){
+      return
+    }
 
-    // Passage en minuscules
-    kw = kw.toLowerCase()
+    if (kw.length == 1 && kw[0]==""){
+      return
+    }
     
-    // Enlève les espaces
-    kw = kw.replace(/\s/g, '')
+      // Passage en minuscules
+      kw = kw.toLowerCase()
+      
+      // Enlève les espaces
+      kw = kw.replace(/\s/g, '')
+      
+      console.log("IS REGEX : " + kw)
+      search_regex(kw)
     
-    console.log("IS REGEX : " + kw)
-    search_regex(kw)
 
   }
   else {
     
+    
     // S'il y a plusieurs mots => regex
 
     var kw = document.getElementById("s").value;
-
+   
+    if (kw.length == 0){
+      return
+    }
+    console.log("la taille est " + kw.length);
     // Passage en minuscules
     kw = kw.toLowerCase()
 
@@ -268,9 +283,9 @@ function searchBooksWhereKW() {
       search_regex(regex)
     }
     else {
-      // Il y a qu'un seul mot => recherche normale
-      console.log("IS NOT REGEX : " + kw[0])
-      search_no_regex(kw[0])
+        // Il y a qu'un seul mot => recherche normale
+        console.log("IS NOT REGEX : " + kw[0])
+        search_no_regex(kw[0])
     }
 
     }
