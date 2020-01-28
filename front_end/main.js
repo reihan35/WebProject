@@ -60,7 +60,6 @@ const header = "<div class=\"header\">" +
 function search_no_regex(kw) {
   // Recherche sur kw n'est pas un regex
 
-
   const url_search = 
   "https://us-central1-testdaar-ac65e.cloudfunctions.net/searchDB_NoRegex/" + kw
 
@@ -78,7 +77,8 @@ function search_no_regex(kw) {
       if (books_kw.length == 0) {
         $(".lds-roller").hide();
         $(".su").hide();
-        $("body").append("<h4 class=Nothing >Your search " + kw + " did not match any documents.</h4>")
+        $("body").append("<h4 class=Nothing >Your search " + kw + " did not match any documents. Maybe give a try to advanced search !</h4>")
+        
       }
 
       else {
@@ -105,8 +105,16 @@ function search_no_regex(kw) {
 
             console.log("Livres de la suggestion :")
             console.log(sugg_kw)
-
+            if (sugg_kw.length==0){
+              $(".su").hide()
+              $(".su2").append("<h5>your word is very common thus, we dont have any particualr suggestions for.<h5>")
+            }
+            x=0
             for (var i in sugg_kw) {
+              x++
+              if (x==16){
+                break;
+              }
               // Remplissage des résultats
               const url_b = "https://us-central1-testdaar-ac65e.cloudfunctions.net/data_book_research/" + sugg_kw[i]
               fetch (url_b)
@@ -133,8 +141,9 @@ function search_regex(kw) {
   // Recherche si kw est un regex
       
   const url_books_from_regex = "https://us-central1-testdaar-ac65e.cloudfunctions.net/books_from_regex/" + kw 
-    
-  fetch(url_books_from_regex)
+  try{
+
+    fetch(url_books_from_regex)
     .then(data => data.json())
     .then(res => {
       //$(".lds-roller").hide();
@@ -146,14 +155,24 @@ function search_regex(kw) {
       console.log("Livres triés :")
       console.log(books_by_number_of_words_order)
 
+      if (words_matched.length == 0){
+        $(".lds-roller").hide();
+        $(".su").hide();
+        $(".matched").hide();
+        $("body").append("<h4 class=Nothing >No matched word to your regex " + kw + " was found in the documents.</h4>")
+        return
+      }
+
       for (var i in words_matched) {
         word = words_matched[i]
           $(".list").append("<li><a id =\""+i+"\" href=\"#\">" + word +"</a></li>");
           $(".list").hide();
       }
 
-      for(i = 0; i < books_by_number_of_words_order.length  ;i++){
+      $(".su").show();
+      $(".matched").show();
 
+      for(i = 0; i < books_by_number_of_words_order.length  ;i++){
         for(var f in books_by_number_of_words_order[i]){
           const key = books_by_number_of_words_order[i][f][0]
           const words1 = books_by_number_of_words_order[i][f][1]
@@ -167,9 +186,12 @@ function search_regex(kw) {
 
               })
           }
-
-      }
-    })
+        }
+      })
+  }catch(TypeError){
+    $("body").append("Your regex does not respect javascript regex syntax.")
+  }
+ 
     
 
     // En parallèle, relancer un calcul pour avoir les suggestions :
@@ -182,8 +204,15 @@ function search_regex(kw) {
 
         console.log("Livres de la suggestion :")
         console.log(suggestions)
-
+        if (suggestions.length==0){
+          $(".su").hide()
+        }
+        x = 0
         for (var i in suggestions) {
+          x++
+          if (x==15){
+            break;
+          }
           // Remplissage des résultats
           const url_b = "https://us-central1-testdaar-ac65e.cloudfunctions.net/data_book_research/" + suggestions[i]
           fetch (url_b)

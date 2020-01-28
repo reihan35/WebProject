@@ -14,7 +14,11 @@ exports.books_from_regex = function(req, res) {
     res.set('Access-Control-Allow-Headers', 'Content-Type');
   
     // Argument (string)
-    var regex = req.path.replace("/", "");
+    try{
+    	var regex = req.path.replace("/", "");
+    }catch(TypeError){
+	return []
+    }
 
     let res_regex = wregex.words_from_regex(regex)
     let words_matched = res_regex.match

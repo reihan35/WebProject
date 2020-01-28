@@ -3,7 +3,7 @@ const fs = require('fs');
 const data_file = '2000_wordlist.json'
 const nb_books = 2000
 
-exports.words_from_regex = function(regex) {
+exports.words_from_regex = function(regex) throw TypeError {
 
     // maximum des mots sortis par la regex (les plus rares en premier!)
     const limit = 10
@@ -12,6 +12,8 @@ exports.words_from_regex = function(regex) {
     let words = JSON.parse(rawdata).wordlist
 
     var regex = regex.replace(/%7C/g, '|'); 
+
+
     regex = new RegExp(regex)
 
     function matchExact(r, str) {
