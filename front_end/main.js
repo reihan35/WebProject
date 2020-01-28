@@ -113,7 +113,7 @@ function search_no_regex(kw) {
             console.log(sugg_kw)
             if (sugg_kw.length==0){
               $(".su").hide()
-              $(".su2").append("<h5>your word is very common thus, we dont have any particualr suggestions for.<h5>")
+              $(".su2").append("<h5>your key word is very common thus, we dont have any particualr suggestions for.<h5>")
             }
             x=0
             for (var i in sugg_kw) {
