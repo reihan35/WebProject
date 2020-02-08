@@ -1,1 +1,0 @@
-console.log("TESTER DES SCRIPTS JS SUR FIREBASE")

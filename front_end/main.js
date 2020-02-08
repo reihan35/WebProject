@@ -1,30 +1,41 @@
 let functions = firebase.functions()
+let db = firebase.firestore();
+
+//Creation of Book Object which will be used to add html
+function Book(title, author, link,date,words){
+  this.title = title;
+  this.author = author;
+  this.link = link;
+  //this.centrality = centrality;
+  this.date = date;
+  this.words = words;
+}
 
 function getHTML(b,recherche_avancee, words=[]){
-    s =  "<div class=\"result\">"+
-    "<div >" + b.link + "</div>" + 
-    "<div class=link>" +
-    "<a href=\"#\" onclick='window.open(\" "+ b.link +"\");return false;'>"+ b.title +"</a>" + 
-    "</div>" + 
-          "<div> By " + b.author + "</div>" +
-          "<div> Realese Date : " + b.date + "</div>" +
-          "</div>"
-          if (recherche_avancee){
-            var first = true
-            s = s + "<div> Contains : "
-            for (var d in words){
-              if (first) {
-                first = false
-                s = s + " " + words[d] 
-              }
-              else {
-                s = s + ", " + words[d] 
-              }
+  s =  "<div class=\"result\">"+
+  "<div >" + b.link + "</div>" + 
+  "<div class=link>" +
+  "<a href=\"#\" onclick='window.open(\" "+ b.link +"\");return false;'>"+ b.title +"</a>" + 
+  "</div>" + 
+        "<div> By " + b.author + "</div>" +
+        "<div> Realese Date : " + b.date + "</div>" +
+        "</div>"
+        if (recherche_avancee){
+          var first = true
+          s = s + "<div> Contains : "
+          for (var d in words){
+            if (first) {
+              first = false
+              s = s + " " + words[d] 
             }
-            s = s + "</div>"
+            else {
+              s = s + ", " + words[d] 
+            }
           }
-          
-    return s;
+          s = s + "</div>"
+        }
+        
+  return s;
 }
 
 const header = "<div class=\"header\">" + 
@@ -80,8 +91,9 @@ function search_no_regex(kw) {
       console.log("Livres recherche de " + kw + " :")
       console.log(books_kw)
 
+      $(".lds-roller").hide();
+
       if (books_kw.length == 0) {
-        $(".lds-roller").hide();
         $(".su").hide();
         $("body").append("<h4 class=Nothing >Your search " + kw + " did not match any documents. Maybe give a try to advanced search !</h4>")
         
@@ -91,14 +103,16 @@ function search_no_regex(kw) {
 
         // Remplissage du résultat de la recherche
         for (var i in books_kw) {
-          const url_b = "https://us-central1-testdaar-ac65e.cloudfunctions.net/data_book_research/" + books_kw[i]
-          fetch (url_b)
-            .then(data => data.json())
-            .then(res => {
-              $(".lds-roller").hide();
-
-              $(".books-list").append(getHTML(res, false))
-            })
+          let b = new Book();
+          db.collection("books").doc(""+books_kw[i])
+          .get().then(doc => {
+            b.title = doc.data().title;
+            b.author = doc.data().author;
+            b.date = doc.data().release;
+            b.link = "http://www.gutenberg.org/cache/epub/"+ doc.data().gut_num +"/pg"+ doc.data().gut_num + ".txt";
+            $(".books-list").append(getHTML(b, false));
+          })
+          
         }
 
 
@@ -122,15 +136,17 @@ function search_no_regex(kw) {
                 break;
               }
               // Remplissage des résultats
-              const url_b = "https://us-central1-testdaar-ac65e.cloudfunctions.net/data_book_research/" + sugg_kw[i]
-              fetch (url_b)
-                .then(data => data.json())
-                .then(res => {
-                  $(".md-chips").append(
-                    "<div class=\"md-chip\">" +
-                    "<a href=\""+ res.link + "\">" + res.title + "</a>" +
-                  "</div>")
-                })
+              //const url_b = "https://us-central1-testdaar-ac65e.cloudfunctions.net/data_book_research/" + sugg_kw[i]
+              let b = new Book();
+              db.collection("books").doc(""+sugg_kw[i])
+              .get().then(doc => {
+                b.title = doc.data().title;
+                b.link = "http://www.gutenberg.org/cache/epub/"+ doc.data().gut_num +"/pg"+ doc.data().gut_num + ".txt";
+                $(".md-chips").append(
+                  "<div class=\"md-chip\">" +
+                  "<a href=\""+ b.link + "\">" + b.title + "</a>" +
+                "</div>")
+              })
             }
           })
 
@@ -148,7 +164,7 @@ function search_regex(kw) {
       
   const url_books_from_regex = "https://us-central1-testdaar-ac65e.cloudfunctions.net/books_from_regex/" + kw 
   try{
-
+    console.log("TEST")
     fetch(url_books_from_regex)
     .then(data => data.json())
     .then(res => {
@@ -161,8 +177,9 @@ function search_regex(kw) {
       console.log("Livres triés :")
       console.log(books_by_number_of_words_order)
 
+      $(".lds-roller").hide();
+
       if (words_matched.length == 0){
-        $(".lds-roller").hide();
         $(".su").hide();
         $(".matched").hide();
         $("body").append("<h4 class=Nothing >No matched word to your regex " + kw + " was found in the documents.</h4>")
@@ -182,15 +199,15 @@ function search_regex(kw) {
         for(var f in books_by_number_of_words_order[i]){
           const key = books_by_number_of_words_order[i][f][0]
           const words1 = books_by_number_of_words_order[i][f][1]
-          const url_b = "https://us-central1-testdaar-ac65e.cloudfunctions.net/data_book_research/" + key
-          fetch (url_b)
-              .then(data => data.json())
-              .then(res => {
-                $(".lds-roller").hide();
-
-                $(".books-list").append(getHTML(res, true, words1))
-
-              })
+          let b = new Book();
+          db.collection("books").doc(""+key)
+          .get().then(doc => {
+            b.title = doc.data().title;
+            b.author = doc.data().author;
+            b.date = doc.data().release;
+            b.link = "http://www.gutenberg.org/cache/epub/"+ doc.data().gut_num +"/pg"+ doc.data().gut_num + ".txt";
+            $(".books-list").append(getHTML(b, true, words1));
+          })
           }
         }
       })
@@ -220,18 +237,16 @@ function search_regex(kw) {
             break;
           }
           // Remplissage des résultats
-          const url_b = "https://us-central1-testdaar-ac65e.cloudfunctions.net/data_book_research/" + suggestions[i]
-          fetch (url_b)
-            .then(data => data.json())
-            .then(res => {
-             
-              $(".md-chips").append(
-                "<div class=\"md-chip\">" +
-                "<a href=\""+ res.link + "\">" + res.title + "</a>" +
-              "</div>")
-              
-            })
-
+          let b = new Book();
+          db.collection("books").doc(""+suggestions[i])
+          .get().then(doc => {
+            b.title = doc.data().title;
+            b.link = "http://www.gutenberg.org/cache/epub/"+ doc.data().gut_num +"/pg"+ doc.data().gut_num + ".txt";
+            $(".md-chips").append(
+              "<div class=\"md-chip\">" +
+              "<a href=\""+ b.link + "\">" + b.title + "</a>" +
+            "</div>")
+          })
         }
         $(".md-chips").hide();
       })

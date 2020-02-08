@@ -319,9 +319,11 @@ if __name__ == "__main__":
             word_json = dict()
             words_in_file = 0
 
+            word_json["words"] = dict()
+
             while words_in_file < file_limit and nw < len(word_list):
 
-                word_json["words"] = dict()
+                
 
                 if nw % 10000 == 0 :
                     print("%d / %d" % (nw , len(word_list) ))
