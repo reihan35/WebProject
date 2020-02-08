@@ -319,11 +319,8 @@ if __name__ == "__main__":
             word_json = dict()
             words_in_file = 0
 
-            word_json["words"] = dict()
-
             while words_in_file < file_limit and nw < len(word_list):
 
-                
 
                 if nw % 10000 == 0 :
                     print("%d / %d" % (nw , len(word_list) ))
@@ -331,7 +328,7 @@ if __name__ == "__main__":
                 books_of_word = [book_id[i] for i in range(len(books)) if books_index[i][nw] != 0]
                 books_of_word.sort(key= lambda id : closeness[id], reverse=True)
 
-                word_json["words"][word_list[nw]] = books_of_word
+                word_json[word_list[nw]] = {"book_list":books_of_word}
 
                 nw += 1
                 words_in_file += 1
