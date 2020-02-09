@@ -164,11 +164,11 @@ function search_regex(kw) {
       
   const url_books_from_regex = "https://us-central1-testdaar-ac65e.cloudfunctions.net/books_from_regex/" + kw 
   try{
-    console.log("TEST")
+    
     fetch(url_books_from_regex)
     .then(data => data.json())
     .then(res => {
-      //$(".lds-roller").hide();
+      
       let words_matched = res.words_matched
       let books_by_number_of_words_order = res.ordered_books
 
@@ -294,6 +294,7 @@ function searchBooksWhereKW() {
     // S'il y a plusieurs mots => regex
 
     var kw = document.getElementById("s").value;
+    var kw_value = kw;
    
     if (kw.length == 0){
       return
@@ -304,6 +305,16 @@ function searchBooksWhereKW() {
 
     // Enlever les caractères spéciaux
     kw = kw.replace(/[^a-zA-Zçéàèùâêîôûë]/gi, ' ')
+
+    if (kw.trim() == "") {
+      $("body").empty();
+      $("body").append(header);
+      $(".su").hide();
+      $(".matched").hide();
+      $(".lds-roller").hide();
+      $("body").append("<h4 class=Nothing >You need to enter letters.</h4>")
+      return
+    }
 
     // Isoler les mots
     kw = kw.trim();
